@@ -66,8 +66,16 @@ const PORT = process.env.PORT || 3000;
 
 async function getHTML(url) {
     if (url == undefined) throw Error("No URL provided");
-    const { data } = await axios.get(url);
-    return data;
+    const res = await axios.get(url);
+
+    // Check res status
+    if (res.status !== 200) throw Error("Could not get HTML");
+
+    // Check if body is HTML 
+    if (res.headers['content-type'] !== 'text/html') throw Error("Not HTML");
+
+    // Return HTML
+    return res.data;
 }
 
 // This endpoint will recieve a url from the body
