@@ -3,6 +3,10 @@ const app = express();
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require("mongoose");
+const axios = require('axios');
+
+API_KEY = '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'
+GPT_MODEL_ENGINE = 'text-davinci-002'
 
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://bcit:0pyQMqP63d5dp7kN@cluster0.oskyzu1.mongodb.net/?retryWrites=true&w=majority");
@@ -34,6 +38,32 @@ const VIDEOS = [
 ]
 
 
+async function promptGPT(prompt) {
+    headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${API_KEY}`
+    }
+
+    payload = {
+        "prompt": prompt,
+        "max_tokens": 512,
+        "temperature": 0.5,
+        "model": GPT_MODEL_ENGINE
+    }
+    let response;
+
+    try {
+        response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
+        console.log(response.data);
+    } catch (error) {
+        console.error(error);
+    }
+    return response;
+}
+
+promptGPT("Can you generate 10 technical interview questions about the following skill: object-oriented programming")
+
+
 // Here we will create random data for our database
 function createRandomData() {
     SKILLS.forEach(async () => {
@@ -51,6 +81,7 @@ function createRandomData() {
         await skill.save()
     })
 }
+
 
 // createRandomData();
 
