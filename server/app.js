@@ -4,8 +4,10 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require("mongoose");
 const axios = require('axios');
+require('dotenv').config()
 
-API_KEY = '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'
+API_KEY = process.env.GPT_API_KEY
+console.log(API_KEY)
 GPT_MODEL_ENGINE = 'text-davinci-002'
 
 // Connect to the Mongo DB
