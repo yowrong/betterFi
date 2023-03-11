@@ -4,6 +4,10 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require("mongoose");
 const Skill = require('./models/Skill');
+const axios = require('axios');
+
+// API_KEY = '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'
+GPT_MODEL_ENGINE = 'text-davinci-002'
 
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://bcit:0pyQMqP63d5dp7kN@cluster0.oskyzu1.mongodb.net/?retryWrites=true&w=majority");
@@ -42,6 +46,32 @@ const VIDEOS = [
 ]
 
 
+async function promptGPT(prompt) {
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+    }
+
+    payload = {
+        "prompt": prompt,
+        "max_tokens": 512,
+        "temperature": 0.5,
+        "model": GPT_MODEL_ENGINE
+    }
+    let response;
+
+    try {
+        response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
+        console.log(response.data);
+    } catch (error) {
+        console.error(error);
+    }
+    return response;
+}
+
+promptGPT("Can you generate 10 technical interview questions about the following skill: object-oriented programming")
+
+
 // Here we will create random data for our database
 async function createRandomData() {
     await Skill.deleteMany();
@@ -60,19 +90,27 @@ async function createRandomData() {
     })
 }
 
+class APIError extends Error {
+    constructor(status, message) {
+        super();
+        this.status = status;
+        this.message = message;
+    }
+}
+
 // createRandomData();
 
 const PORT = process.env.PORT || 3000;
 
 async function getHTML(url) {
-    if (url == undefined) throw Error("No URL provided");
+    if (url == undefined) throw APIError(400, "No URL provided");
     const res = await axios.get(url);
 
     // Check res status
-    if (res.status !== 200) throw Error("Could not get HTML");
+    if (res.status !== 200) throw APIError(404, "Could not get HTML");
 
     // Check if body is HTML 
-    if (res.headers['content-type'] !== 'text/html') throw Error("Not HTML");
+    if (res.headers['content-type'] !== 'text/html') throw Error(400, "Not HTML");
 
     // Return HTML
     return res.data;
@@ -85,7 +123,14 @@ async function getHTML(url) {
 app.post('/api/explore', async (req, res) => {
     const { url } = req.body;
 
-    const html = await getHTML(url);
+    try {
+        const html = await getHTML(url);
+
+    } catch (error) {
+        console.error(error);
+        res.status(error.status).json({ message: error.message });
+    }
+
 });
 
 
