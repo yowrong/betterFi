@@ -2,6 +2,11 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const logger = require('morgan');
+const mongoose = require("mongoose");
+
+// Connect to the Mongo DB
+mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://bcit:0pyQMqP63d5dp7kN@cluster0.oskyzu1.mongodb.net/?retryWrites=true&w=majority");
+
 
 app.use(bodyParser.json());
 
