@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require("mongoose");
+const Skill = require('./models/Skill');
 
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://bcit:0pyQMqP63d5dp7kN@cluster0.oskyzu1.mongodb.net/?retryWrites=true&w=majority");
@@ -31,24 +32,31 @@ const VIDEOS = [
     "tRZGeaHPoaw",
     "h0nxCDiD-zg",
     "V1y-mbWM3B8",
+    "F9UC9DY-vIU",
+    "FXpIoQ_rT_c",
+    "7r4xVDI2vho",
+    "-MTSQjw5DrM",
+    "pTFZFxd4hOI",
+    "fgdpvwEWJ9M",
+
 ]
 
 
 // Here we will create random data for our database
-function createRandomData() {
-    SKILLS.forEach(async () => {
-        rnd = Math.random()
-
-        videos = []
+async function createRandomData() {
+    await Skill.deleteMany();
+    SKILLS.forEach(async (skill) => {
+        let tutorials = []
         for (let i = 0; i < 3; i++) {
-            videos.push(VIDEOS[Math.floor(Math.random() * VIDEOS.length)])
+            tutorials.push({ video: VIDEOS[Math.floor(Math.random() * VIDEOS.length)], description: "Random Description" })
         }
         // New Skill
-        const skill = new Skill({
-            name: skill,
-            videos: videos,
+        const s = new Skill({
+            title: skill,
+            tutorials: tutorials
+
         })
-        await skill.save()
+        await s.save()
     })
 }
 
@@ -56,6 +64,26 @@ function createRandomData() {
 
 const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => { res.send("HELLO WORLD") });
+async function getHTML(url) {
+    if (url == undefined) throw Error("No URL provided");
+    const { data } = await axios.get(url);
+    return data;
+}
+
+// This endpoint will recieve a url from the body
+// and get the HTML and parse it for the skills
+// once it has the skills it will return the skill object
+// with the tutorials
+app.post('/api/explore', async (req, res) => {
+    const { url } = req.body;
+
+    const html = await getHTML(url);
+});
+
+
+// This endpoint will recieve a users job experience
+// and a list of skills they have currently, the api will
+// then make a call to chatGPT to createa a resume template
+app.post('/api/flex', (req, res) => { })
 
 app.listen(3000, () => console.log(`Server started on port ${PORT}`));
