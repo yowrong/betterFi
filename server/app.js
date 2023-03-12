@@ -8,7 +8,6 @@ const axios = require('axios');
 const { JSDOM } = require("jsdom");
 const fs = require('fs');
 const { google } = require('googleapis')
-const cors = require('cors')
 
 require('dotenv').config()
 
@@ -19,26 +18,12 @@ GPT_MODEL_ENGINE = 'text-davinci-002'
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://bcit:0pyQMqP63d5dp7kN@cluster0.oskyzu1.mongodb.net/?retryWrites=true&w=majority");
 
+
 app.use(bodyParser.json());
 
 // set up logger
 app.use(logger('dev'));
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-// Default Skills
-const SKILLS = ["HTML", "CSS", "JavaScript", "React", "Node", "Express", "MongoDB", "Python", "Java", "C++", "C#", "PHP", "SQL", "Git", "GitHub"]
-// , "Linux", "Windows", "MacOS", "Android", "iOS", "Swift", "Kotlin", "Ruby", "Ruby on Rails", "Angular", "Vue", "Bootstrap", "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL", "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify", "Firebase", "Jest", "Mocha", "Chai", "Cypress", "Selenium", "Jenkins", "Travis CI", "Circle CI", "Babel", "Webpack", "Gulp", "Grunt", "NPM", "Yarn", "Bash", "Zsh", "PowerShell", "Bash on Windows", "Bash on Ubuntu on Windows", "Bash on macOS", "Bash on Android", "Bash on iOS", "Bash on Chrome OS", "Bash on Linux", "Bash on FreeBSD", "Bash on OpenBSD", "Bash on NetBSD", "Bash on DragonFly BSD", "Bash on Solaris", "Bash on AIX", "Bash on HP-UX", "Bash on IRIX", "Bash on OpenIndiana", "Bash on Oracle Solaris", "Bash on Oracle Linux", "Bash on RHEL", "Bash on CentOS", "Bash on Fedora", "Bash on SUSE", "Bash on openSUSE", "Bash on Arch Linux", "Bash on Manjaro", "Bash on Alpine Linux", "Bash on Gentoo", "Bash on Slackware", "Bash on Void Linux", "Bash on Solus", "Bash on Mageia", "Bash on PCLinuxOS", "Bash on Deepin", "Bash on elementary OS", "Bash on Linux Mint", "Bash on Ubuntu MATE", "Bash on Ubuntu Budgie", "Bash on Kubuntu", "Bash on Xubuntu", "Bash on Lubuntu", "Bash on Ubuntu Kylin"]
-=======
-=======
->>>>>>> a257c38 (Add controller class to server branch)
-=======
-app.use(cors({
-    origin: 'http://localhost:3000',
-}))
-
->>>>>>> 2219e36 (Modify Controller and Pull server in)
 const SKILLS = ["Python", "Java", "C++", "C#", "Android", "HTML", "CSS",
     "JavaScript", "React", "Node", "Express", "MongoDB", "Agile", "HTTP",
     "PHP", "SQL", "Git", "GitHub", "Linux", "Windows", "MacOS", "iOS",
@@ -48,12 +33,8 @@ const SKILLS = ["Python", "Java", "C++", "C#", "Android", "HTML", "CSS",
     "Firebase", "Jest", "Mocha", "Chai", "Selenium", "Jenkins", "NPM", "Yarn",
     "Bash", "PowerShell",
 ]
-<<<<<<< HEAD
 
 console.log(SKILLS.length);
->>>>>>> 6c0cd50 (Added api/flex endpoint.)
-=======
->>>>>>> a257c38 (Add controller class to server branch)
 const VIDEOS = [
     "hQAHSlTtcmY",
     "xk4_1vDrzzo",
@@ -76,6 +57,25 @@ const VIDEOS = [
     "-MTSQjw5DrM",
     "pTFZFxd4hOI",
     "fgdpvwEWJ9M",
+    "EOfCEhWq8sg",
+    "kUMe1FH4CHE",
+    "OXGznpKZ_sA",
+    "PkZNo7MFNFg",
+    "Ke90Tje7VS0",
+    "ENrzD9HAZK4",
+    "L72fhGm1tfE",
+    "pWbMrx5rVBE",
+    "_uQrJ0TkZlc",
+    "xk4_1vDrzzo",
+    "vLnPwxZdW4Y",
+    "gfkTfcpWqAY",
+    "BUCiSSyIGGU",
+    "HXV3zeQKqGY",
+    "xT8oP0wy-A0",
+    "F2ojC6TNwws",
+    "8wZ2ZD--VTk",
+    "3qBXWUpoPHo",
+    "3c-iBn73dDE"
 ]
 
 
@@ -118,7 +118,6 @@ async function getQuestionsFromGPT(prompt) {
         questions = response.data.choices[0].text.split('\n').map(question => question.replace(/^\d+.\s+/, ''))
         // Remove empty questions and whilte space
         questions = questions.filter(question => question.trim() !== '');
-        // console.log(response.data.choices[0].text)
     } catch (error) {
         // console.error(error);
         throw new APIError(500, "Error generating questions");
@@ -126,9 +125,6 @@ async function getQuestionsFromGPT(prompt) {
     return questions;
 }
 
-<<<<<<< HEAD
-// promptGPT("Can you generate 10 technical interview questions about the following skill: object-oriented programming")
-=======
 async function getResumeFromGPT(prompt) {
     headers = {
         'Content-Type': 'application/json',
@@ -152,16 +148,6 @@ async function getResumeFromGPT(prompt) {
     }
 }
 
-<<<<<<< HEAD
-// async function getYTData(skill) {
-//     return new Promise(res => {
-//         const youtube = google.youtube({
-//             version: 'v3',
-//             auth: YT_KEY
-//         });
->>>>>>> c36ba74 (Added generateCoverLetter function)
-
-=======
 async function getYTData(skill) {
     return new Promise(res => {
         const youtube = google.youtube({
@@ -189,30 +175,9 @@ async function getYTData(skill) {
         })
     })
 }
->>>>>>> 6c0cd50 (Added api/flex endpoint.)
 
-// Here we will create random data for our database
-async function createRandomData() {
-    await Skill.deleteMany();
-    SKILLS.forEach(async (skill) => {
-        let tutorials = []
-        for (let i = 0; i < 3; i++) {
-            const video = VIDEOS[Math.floor(Math.random() * VIDEOS.length)];
-            const { description, title } = await getYTData(video)
+// // promptGPT("Can you generate a list of 10 youtube videos, returning the title and link, specifically about the following skill: Java")
 
-<<<<<<< HEAD
-            tutorials.push({ video: VIDEOS[Math.floor(Math.random() * VIDEOS.length)], description, title })
-        }
-        // New Skill await promptGPT(`Can you generate 10 technical interview questions about the following skill: ${skill}`)
-        const s = new Skill({
-            title: skill,
-            tutorials: tutorials
-
-        })
-        await s.save()
-    })
-}
-=======
 // // Here we will create random data for our database
 // async function createRandomData() {
 //     for (var i = 0; i < SKILLS.length; i++) {
@@ -223,7 +188,6 @@ async function createRandomData() {
 //         await s.save()
 //     }
 // }
->>>>>>> b5275a0 (change parseHTML function to return job title and company)
 
 
 class APIError extends Error {
@@ -243,22 +207,20 @@ function extractSkillsFromPosting(skillsSentences) {
                 skillSet.add(SKILLS[i]);
         }
     }
-    console.log(skillSet);
     return Array.from(skillSet);
 }
-// createRandomData();
 
 const PORT = process.env.PORT || 3000;
 
 async function getHTML(url) {
-    if (url == undefined) throw Error("No URL provided");
+    if (url == undefined) throw new APIError(400, "No URL provided");
     const res = await axios.get(url);
 
     // Check res status
-    if (res.status !== 200) throw Error("Could not get HTML");
+    if (res.status !== 200) throw new APIError(404, "Could not get HTML");
 
     // Check if body is HTML 
-    if (res.headers['content-type'] !== 'text/html') throw Error("Not HTML");
+    if (!res.headers['content-type'].includes("text/html")) throw new Error(400, "Not HTML");
 
     // Return HTML
     return res.data;
@@ -336,12 +298,8 @@ async function generateCoverLetter(skills, experience, jobTitle, education, comp
 // once it has the skills it will return the skill object
 // with the tutorials
 app.post('/api/explore', async (req, res) => {
-    console.log('explore req received')
     const { url } = req.body;
 
-<<<<<<< HEAD
-    const html = await getHTML(url);
-=======
     try {
         const html = await getHTML(url);
 
@@ -360,7 +318,6 @@ app.post('/api/explore', async (req, res) => {
         res.status(error.status).json({ message: error.message });
     }
 
->>>>>>> b5275a0 (change parseHTML function to return job title and company)
 });
 
 
