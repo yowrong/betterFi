@@ -14,17 +14,26 @@ const EditPractice = () => {
             .map(({ title, questions }) => ({ title, questions: questions.slice(1) }))
         )
         setSections(skills.map(({ title }) => title));
-      }, []);
+        setSection(skills.map(({ title }) => title)[0]);
+    }, []);
 
-      useEffect(() => {
-        console.log('data', data);
-      }, [section, data])
+    useEffect(() => {
+        if (data) {
+            const display = data
+            ?.find((s) => s['title'] === section);
+            display && setDisplayData(display['questions']);
+        }
+    }, [section, data])
+
+    const onSectionChange = (section) => {
+        setSection(section);
+    }
 
     return (
-        <>
-            {/* <GradientSegmentedControl sections={sections}/> */}
-            <FaqSimple data={data}/>
-        </>
+        <div style={{display: 'flex', flexDirection: 'column'}}>
+            <GradientSegmentedControl sections={sections} onSectionChange={onSectionChange}/>
+            <FaqSimple data={displayData}/>
+        </div>
 
     );
 }

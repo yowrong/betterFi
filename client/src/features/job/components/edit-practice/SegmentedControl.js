@@ -7,6 +7,8 @@ const useStyles = createStyles((theme) => ({
     border: `${rem(1)} solid ${
       theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[1]
     }`,
+    margin: '0 auto',
+    alignSelf: 'center',
   },
 
   indicator: {
@@ -26,15 +28,22 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const GradientSegmentedControl = ({sections}) => {
+const GradientSegmentedControl = ({sections, onSectionChange}) => {
   const { classes } = useStyles();
   return (
-    <SegmentedControl
-      radius="xl"
-      size="md"
-      data={sections}
-      classNames={classes}
-    />
+    <>
+    {sections && 
+        <SegmentedControl
+        radius="xl"
+        size="md"
+        data={sections}
+        defaultValue={sections[0]}
+        classNames={classes}
+        onChange={onSectionChange}
+        />
+    }
+    </>
+
   );
 }
 
