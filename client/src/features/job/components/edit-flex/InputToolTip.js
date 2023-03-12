@@ -1,5 +1,6 @@
-import { TextInput, Tooltip, Center, Text } from '@mantine/core';
+import { TextInput, Tooltip, Center, Text, Button } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
+import { useState } from 'react';
 
 function TooltipEd() {
   const rightSection = (
@@ -51,13 +52,22 @@ function TooltipEx() {
     );
 }
 
-export function InputTooltip() {
+export const InputTooltip = ({onEducationChange, onExperienceChange}) => {
+  const [valueEd, setValueEd] = useState('');
+  const [valueEx, setValueEx] = useState('');
   return (
     <>
       <br/>
-      <TooltipEd/>
+      <TooltipEd
+        valueEd={valueEd}
+        onChange={(event) => onEducationChange(event.currentTarget.value)}
+      />
       <br/>
-      <TooltipEx/>
+      <TooltipEx
+        valueEx={valueEx}
+        onChange={(event) => onExperienceChange(event.currentTarget.value)}
+      />
+      <br/>
     </>
   );
 }

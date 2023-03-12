@@ -62,6 +62,8 @@ export const EditExplore = () => {
             const res = await getExplore(value);
             console.log(res);
             localStorage.setItem('skills', JSON.stringify(res.skills));
+            localStorage.setItem('jobTitle', res.jobTitle);
+            localStorage.setItem('company', res.company);
             setJobTitle(res.jobTitle);
             setCompany(res.company);
             notifications.show({
