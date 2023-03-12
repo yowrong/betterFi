@@ -3,11 +3,11 @@ const app = express();
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require("mongoose");
+const Skill = require('./models/Skill');
 const axios = require('axios');
 require('dotenv').config()
 
 API_KEY = process.env.GPT_API_KEY
-console.log(API_KEY)
 GPT_MODEL_ENGINE = 'text-davinci-002'
 
 // Connect to the Mongo DB
@@ -20,7 +20,8 @@ app.use(bodyParser.json());
 app.use(logger('dev'));
 
 // Default Skills
-const SKILLS = ["HTML", "CSS", "JavaScript", "React", "Node", "Express", "MongoDB", "Python", "Java", "C++", "C#", "PHP", "SQL", "Git", "GitHub", "Linux", "Windows", "MacOS", "Android", "iOS", "Swift", "Kotlin", "Ruby", "Ruby on Rails", "Angular", "Vue", "Bootstrap", "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL", "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify", "Firebase", "Jest", "Mocha", "Chai", "Cypress", "Selenium", "Jenkins", "Travis CI", "Circle CI", "Babel", "Webpack", "Gulp", "Grunt", "NPM", "Yarn", "Bash", "Zsh", "PowerShell", "Bash on Windows", "Bash on Ubuntu on Windows", "Bash on macOS", "Bash on Android", "Bash on iOS", "Bash on Chrome OS", "Bash on Linux", "Bash on FreeBSD", "Bash on OpenBSD", "Bash on NetBSD", "Bash on DragonFly BSD", "Bash on Solaris", "Bash on AIX", "Bash on HP-UX", "Bash on IRIX", "Bash on OpenIndiana", "Bash on Oracle Solaris", "Bash on Oracle Linux", "Bash on RHEL", "Bash on CentOS", "Bash on Fedora", "Bash on SUSE", "Bash on openSUSE", "Bash on Arch Linux", "Bash on Manjaro", "Bash on Alpine Linux", "Bash on Gentoo", "Bash on Slackware", "Bash on Void Linux", "Bash on Solus", "Bash on Mageia", "Bash on PCLinuxOS", "Bash on Deepin", "Bash on elementary OS", "Bash on Linux Mint", "Bash on Ubuntu MATE", "Bash on Ubuntu Budgie", "Bash on Kubuntu", "Bash on Xubuntu", "Bash on Lubuntu", "Bash on Ubuntu Kylin"]
+const SKILLS = ["HTML", "CSS"] // "JavaScript", "React", "Node", "Express", "MongoDB", "Python", "Java", "C++", "C#", "PHP", "SQL", "Git", "GitHub"]
+// , "Linux", "Windows", "MacOS", "Android", "iOS", "Swift", "Kotlin", "Ruby", "Ruby on Rails", "Angular", "Vue", "Bootstrap", "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL", "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify", "Firebase", "Jest", "Mocha", "Chai", "Cypress", "Selenium", "Jenkins", "Travis CI", "Circle CI", "Babel", "Webpack", "Gulp", "Grunt", "NPM", "Yarn", "Bash", "Zsh", "PowerShell", "Bash on Windows", "Bash on Ubuntu on Windows", "Bash on macOS", "Bash on Android", "Bash on iOS", "Bash on Chrome OS", "Bash on Linux", "Bash on FreeBSD", "Bash on OpenBSD", "Bash on NetBSD", "Bash on DragonFly BSD", "Bash on Solaris", "Bash on AIX", "Bash on HP-UX", "Bash on IRIX", "Bash on OpenIndiana", "Bash on Oracle Solaris", "Bash on Oracle Linux", "Bash on RHEL", "Bash on CentOS", "Bash on Fedora", "Bash on SUSE", "Bash on openSUSE", "Bash on Arch Linux", "Bash on Manjaro", "Bash on Alpine Linux", "Bash on Gentoo", "Bash on Slackware", "Bash on Void Linux", "Bash on Solus", "Bash on Mageia", "Bash on PCLinuxOS", "Bash on Deepin", "Bash on elementary OS", "Bash on Linux Mint", "Bash on Ubuntu MATE", "Bash on Ubuntu Budgie", "Bash on Kubuntu", "Bash on Xubuntu", "Bash on Lubuntu", "Bash on Ubuntu Kylin"]
 const VIDEOS = [
     "hQAHSlTtcmY",
     "xk4_1vDrzzo",
@@ -37,13 +38,20 @@ const VIDEOS = [
     "tRZGeaHPoaw",
     "h0nxCDiD-zg",
     "V1y-mbWM3B8",
+    "F9UC9DY-vIU",
+    "FXpIoQ_rT_c",
+    "7r4xVDI2vho",
+    "-MTSQjw5DrM",
+    "pTFZFxd4hOI",
+    "fgdpvwEWJ9M",
+
 ]
 
 
 async function promptGPT(prompt) {
     headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_KEY}`
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
     }
 
     payload = {
@@ -52,43 +60,87 @@ async function promptGPT(prompt) {
         "temperature": 0.5,
         "model": GPT_MODEL_ENGINE
     }
-    let response;
+    let questions;
 
     try {
-        response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
-        console.log(response.data);
+        let response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
+        questions = response.data.choices[0].text.split('\n').map(question => question.replace(/^\d+.\s+/, ''))
+        // Remove empty questions and whilte space
+        questions = questions.filter(question => question.trim() !== '');
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+        throw new APIError(500, "Error generating questions");
     }
-    return response;
+    return questions;
 }
 
-// promptGPT("Can you generate 10 technical interview questions about the following skill: object-oriented programming")
-
-
 // Here we will create random data for our database
-function createRandomData() {
-    SKILLS.forEach(async () => {
-        rnd = Math.random()
-
-        videos = []
+async function createRandomData() {
+    await Skill.deleteMany();
+    SKILLS.forEach(async (skill) => {
+        let tutorials = []
         for (let i = 0; i < 3; i++) {
-            videos.push(VIDEOS[Math.floor(Math.random() * VIDEOS.length)])
+            tutorials.push({ video: VIDEOS[Math.floor(Math.random() * VIDEOS.length)], description: "Random Description" })
         }
         // New Skill
-        const skill = new Skill({
-            name: skill,
-            videos: videos,
+        const s = new Skill({
+            title: skill,
+            tutorials: tutorials,
+            questions: await promptGPT(`Can you generate 10 technical interview questions about the following skill: ${skill}`)
         })
-        await skill.save()
+        await s.save()
     })
 }
 
+createRandomData();
+
+class APIError extends Error {
+    constructor(status, message) {
+        super(message);
+        this.status = status;
+    }
+}
 
 // createRandomData();
 
 const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => { res.send("HELLO WORLD") });
+async function getHTML(url) {
+    if (url == undefined) throw new APIError(400, "No URL provided");
+    const res = await axios.get(url);
+
+    console.log(res.headers['content-type']);
+    // Check res status
+    if (res.status !== 200) throw new APIError(404, "Could not get HTML");
+
+    // Check if body is HTML 
+    if (!res.headers['content-type'].includes("text/html")) throw new Error(400, "Not HTML");
+
+    // Return HTML
+    return res.data;
+}
+
+// This endpoint will recieve a url from the body
+// and get the HTML and parse it for the skills
+// once it has the skills it will return the skill object
+// with the tutorials
+app.post('/api/explore', async (req, res) => {
+    const { url } = req.body;
+
+    try {
+        const html = await getHTML(url);
+        console.log(html);
+    } catch (error) {
+        console.error(error);
+        res.status(error.status).json({ message: error.message });
+    }
+
+});
+
+
+// This endpoint will recieve a users job experience
+// and a list of skills they have currently, the api will
+// then make a call to chatGPT to createa a resume template
+app.post('/api/flex', (req, res) => { })
 
 app.listen(3000, () => console.log(`Server started on port ${PORT}`));
