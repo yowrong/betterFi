@@ -116,9 +116,9 @@ function extractSkillsFromPosting(skillsSentences) {
             if (skillsSentences[j].toLowerCase().includes(s))
                 skillSet.add(SKILLS[i]);
         }
-     }
-     console.log(skillSet);
-     return Array.from(skillSet);
+    }
+    console.log(skillSet);
+    return Array.from(skillSet);
 }
 // createRandomData();
 
