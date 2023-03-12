@@ -30,8 +30,8 @@ const EditApply = () => {
     const [data, setData] = useState(sampleData);
 
     useEffect(() => {
-        // TODO: Query from Server
-        setData(toHTML(data));
+        const res = localStorage.getItem('coverLetter');
+        setData(toHTML(res));
     }, []);
     
     const editor = useEditor({
