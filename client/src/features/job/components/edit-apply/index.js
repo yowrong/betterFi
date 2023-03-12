@@ -30,6 +30,7 @@ const EditApply = () => {
     const [data, setData] = useState(sampleData);
 
     useEffect(() => {
+        localStorage.setItem('coverLetter', sampleData);
         const res = localStorage.getItem('coverLetter');
         setData(toHTML(res));
     }, []);
