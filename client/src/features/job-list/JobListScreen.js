@@ -1,6 +1,10 @@
+import NavBar from "../../components/navbar";
+
 const JobListScreen = () => {
     return (
-        <div>Job List Screen</div>
+        <>
+            <NavBar isActive="/jobs" />
+        </>
     )
 }
 

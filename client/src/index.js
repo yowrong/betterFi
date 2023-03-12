@@ -9,7 +9,26 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <MantineProvider
     theme={{
-      colorScheme: 'dark',
+      colorScheme: 'light',
+      colors: {
+        rose: '#FC466B',
+        magenta: '#d3498f',
+        thanos: '#9b549d',
+        grimace: '#625895',
+        navy: '#39537a',
+        ravsPants: '#2f4858',
+        blue: '#3F5EFB',
+        white: '#ffffff',
+      },
+      primaryColor: 'rose',
+      defaultGradient: {
+        deg: 50,
+        from: '#FC466B',
+        to: '#3F5EFB'
+      },
+      fontFamily: 'new-zen',
+      loader: 'bars'
+
     }}
     withGlobalStyles
     withNormalizeCSS
