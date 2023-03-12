@@ -24,8 +24,15 @@ app.use(bodyParser.json());
 // set up logger
 app.use(logger('dev'));
 
-// Default Skills
-const SKILLS = ["Android", "HTML", "CSS", "JavaScript", "React", "Node", "Express", "MongoDB", "Python", "Java", "C++", "C#", "PHP", "SQL", "Git", "GitHub", "Linux", "Windows", "MacOS", "iOS", "Swift", "Kotlin", "Ruby", "Ruby on Rails", "Angular", "Vue", "Bootstrap", "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL", "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify", "Firebase", "Jest", "Mocha", "Chai", "Cypress", "Selenium", "Jenkins", "Travis CI", "Circle CI", "Babel", "Webpack", "Gulp", "Grunt", "NPM", "Yarn", "Bash", "Zsh", "PowerShell", "Bash on Windows", "Bash on Ubuntu on Windows", "Bash on macOS", "Bash on Android", "Bash on iOS", "Bash on Chrome OS", "Bash on Linux", "Bash on FreeBSD", "Bash on OpenBSD", "Bash on NetBSD", "Bash on DragonFly BSD", "Bash on Solaris", "Bash on AIX", "Bash on HP-UX", "Bash on IRIX", "Bash on OpenIndiana", "Bash on Oracle Solaris", "Bash on Oracle Linux", "Bash on RHEL", "Bash on CentOS", "Bash on Fedora", "Bash on SUSE", "Bash on openSUSE", "Bash on Arch Linux", "Bash on Manjaro", "Bash on Alpine Linux", "Bash on Gentoo", "Bash on Slackware", "Bash on Void Linux", "Bash on Solus", "Bash on Mageia", "Bash on PCLinuxOS", "Bash on Deepin", "Bash on elementary OS", "Bash on Linux Mint", "Bash on Ubuntu MATE", "Bash on Ubuntu Budgie", "Bash on Kubuntu", "Bash on Xubuntu", "Bash on Lubuntu", "Bash on Ubuntu Kylin"]
+const SKILLS = ["Angular", "Vue", "Bootstrap",
+    "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL",
+    "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify",
+    "Firebase", "Jest", "Mocha", "Chai", "Selenium", "Jenkins", "NPM", "Yarn", "Bash",
+    "PowerShell", "Python", "Java", "C++", "C#", "Android", "HTML", "CSS",
+    "JavaScript", "React", "Node", "Express", "MongoDB", "Agile", "HTTP",
+    "PHP", "SQL", "Git", "GitHub", "Linux", "Windows", "MacOS", "iOS",
+    "Swift", "Kotlin", "Ruby", "Ruby on Rails"]
+
 const VIDEOS = [
     "hQAHSlTtcmY",
     "xk4_1vDrzzo",
@@ -48,10 +55,29 @@ const VIDEOS = [
     "-MTSQjw5DrM",
     "pTFZFxd4hOI",
     "fgdpvwEWJ9M",
+    "EOfCEhWq8sg",
+    "kUMe1FH4CHE",
+    "OXGznpKZ_sA",
+    "PkZNo7MFNFg",
+    "Ke90Tje7VS0",
+    "ENrzD9HAZK4",
+    "L72fhGm1tfE",
+    "pWbMrx5rVBE",
+    "_uQrJ0TkZlc",
+    "xk4_1vDrzzo",
+    "vLnPwxZdW4Y",
+    "gfkTfcpWqAY",
+    "BUCiSSyIGGU",
+    "HXV3zeQKqGY",
+    "xT8oP0wy-A0",
+    "F2ojC6TNwws",
+    "8wZ2ZD--VTk",
+    "3qBXWUpoPHo",
+    "3c-iBn73dDE"
 ]
 
 
-async function promptGPT(prompt) {
+async function getQuestionsFromGPT(prompt) {
     headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${API_KEY}`
@@ -60,7 +86,7 @@ async function promptGPT(prompt) {
     payload = {
         "prompt": prompt,
         "max_tokens": 512,
-        "temperature": 0.5,
+        "temperature": 0.1,
         "model": GPT_MODEL_ENGINE
     }
     let questions;
@@ -77,49 +103,47 @@ async function promptGPT(prompt) {
     return questions;
 }
 
-async function getYTData(video) {
-    return new Promise(res => {
-        const url = `https://www.youtube.com/watch?v=${video}`
-        const youtube = google.youtube({
-            version: 'v3',
-            auth: YT_KEY
-        });
+// async function getYTData(skill) {
+//     return new Promise(res => {
+//         const youtube = google.youtube({
+//             version: 'v3',
+//             auth: YT_KEY
+//         });
 
-        youtube.videos.list({
-            id: video,
-            part: 'snippet'
-        }, (err, data) => {
-            if (err) {
-                console.log(err)
-                return res({ description: "", title: "" })
-            }
-            const { description, title } = data.data.items[0].snippet
-            res({ description, title })
-        })
+//         youtube.search.list({
+//             part: 'id,snippet',
+//             q: skill + " tutorial",
+//             type: 'video',
+//             maxResults: 5,
+//         }, (err, data) => {
+//             if (err) {
+//                 console.error(`Error searching for videos with keyword ${skill}: ${err}`);
+//                 return res([]);
+//             }
+//             const videos = data.data.items.map(item => {
+//                 const { videoId } = item.id;
+//                 const { title, description, thumbnails } = item.snippet;
+//                 return { video: videoId, title, description, thumbnail: thumbnails.default.url };
+//             });
+//             console.log(`Found ${videos.length} videos with keyword ${skill}`);
+//             return res(videos);
+//         })
+//     })
+// }
 
-    })
-}
+// // promptGPT("Can you generate a list of 10 youtube videos, returning the title and link, specifically about the following skill: Java")
 
-// Here we will create random data for our database
-async function createRandomData() {
-    await Skill.deleteMany();
-    SKILLS.forEach(async (skill) => {
-        let tutorials = []
-        for (let i = 0; i < 3; i++) {
-            const video = VIDEOS[Math.floor(Math.random() * VIDEOS.length)];
-            const { description, title } = await getYTData(video)
-
-            tutorials.push({ video: VIDEOS[Math.floor(Math.random() * VIDEOS.length)], description, title })
-        }
-        // New Skill await promptGPT(`Can you generate 10 technical interview questions about the following skill: ${skill}`)
-        const s = new Skill({
-            title: skill,
-            tutorials: tutorials,
-            questions: ["blah", "blah", "blah", "blah", "blah", "blah", "blah", "blah", "blah", "blah"]
-        })
-        await s.save()
-    })
-}
+// // Here we will create random data for our database
+// async function createRandomData() {
+//     await Skill.deleteMany();
+//     for (var i = 0; i < SKILLS.length; i++) {
+//         let tutorials = await getYTData(SKILLS[i])
+//         let questions = await getQuestionsFromGPT(`Can you generate 10 technical interview questions about the following skill: ${SKILLS[i]}`)
+//         // New Skill await promptGPT(`Can you generate 10 technical interview questions about the following skill: ${skill}`)
+//         const s = new Skill({ title: SKILLS[i], tutorials, questions })
+//         await s.save()
+//     }
+// }
 
 // createRandomData();
 
@@ -140,10 +164,8 @@ function extractSkillsFromPosting(skillsSentences) {
                 skillSet.add(SKILLS[i]);
         }
     }
-    console.log(skillSet);
     return Array.from(skillSet);
 }
-// createRandomData();
 
 const PORT = process.env.PORT || 3000;
 
@@ -196,8 +218,6 @@ app.post('/api/explore', async (req, res) => {
         // Parse HTML for skills
         const skillSentences = parseHTML(html);
         const skills = extractSkillsFromPosting(skillSentences);
-
-        skills.forEach(s => console.log(s));
 
         // Get skills from database
 

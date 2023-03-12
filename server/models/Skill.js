@@ -8,20 +8,7 @@ const SkillSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    tutorials: [{
-        description: {
-            type: String,
-            required: true
-        },
-        title: {
-            type: String,
-            required: true
-        },
-        video: {
-            type: String,
-            required: true
-        },
-    }],
+    tutorials: [Object],
     questions: [String]
 });
 
