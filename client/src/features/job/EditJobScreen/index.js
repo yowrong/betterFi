@@ -31,7 +31,7 @@ const EditJobScreen = () => {
             setActive(active + 1);
             setCurrent(active + 1);
         }
-        if (active == 5 && !allDone) {
+        if (active === 5 && !allDone) {
             setAllDone(true);
             notifications.show({
                 title: 'Congratulations!',
