@@ -98,7 +98,7 @@ async function createRandomData() {
     })
 }
 
-createRandomData();
+// createRandomData();
 
 class APIError extends Error {
     constructor(status, message) {
@@ -107,6 +107,19 @@ class APIError extends Error {
     }
 }
 
+
+function extractSkillsFromPosting(skillsSentences) {
+    const skillSet = new Set();
+    for (var i = 0; i < SKILLS.length; i++) {
+        var s = SKILLS[i].toLowerCase();
+        for (var j = 0; j < skillsSentences.length; j++) {
+            if (skillsSentences[j].toLowerCase().includes(s))
+                skillSet.add(SKILLS[i]);
+        }
+     }
+     console.log(skillSet);
+     return Array.from(skillSet);
+}
 // createRandomData();
 
 const PORT = process.env.PORT || 3000;
@@ -125,8 +138,8 @@ async function getHTML(url) {
     return res.data;
 }
 
-// This function will parse the HTML and return the skills
-async function parseHTML(html) {
+// This function will parse the HTML and return the an array of skills as sentences
+function parseHTML(html) {
     // Load HTML into cheerio
     const $ = new JSDOM(html);
 
@@ -136,9 +149,9 @@ async function parseHTML(html) {
 
     // Get ul from skills container
     const skills = skillsContainer.querySelectorAll('li');
-    const skillsArray = Array.from(skills);
+    let skillsArray = Array.from(skills);
 
-    skillsArray.forEach((s) => console.log(s.textContent))
+    skillsArray = skillsArray.map(s => s.textContent)
 
     // Return skills
     return skillsArray;
