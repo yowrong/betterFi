@@ -9,8 +9,8 @@ const useStyles = createStyles((theme) => ({
   },
 
   wrapper: {
-    padding: 0,
-    maxHeight: 650,
+    paddingTop: theme.spacing.xl,
+    maxHeight: 500,
     overflowY: 'scroll',
     '-ms-overflow-style': 'none',
     'scrollbar-width': 'none',
@@ -35,7 +35,6 @@ const FaqSimple = ({ data }) => {
   const { classes } = useStyles();
 
   const renderQuestions = (questions) => {
-    console.log(questions);
     return questions.map((q, i) => (
       <Accordion.Item className={classes.item} value={`q-${i}`}>
         <Accordion.Control>{q}</Accordion.Control>
@@ -60,8 +59,10 @@ const FaqSimple = ({ data }) => {
 
   return (
     <Container size="sm" className={classes.wrapper}>
-      {renderSections(data)}
-      {/* {renderQuestions(data)} */}
+      {/* {renderSections(data)} */}
+      <Accordion variant="separated">
+        {data && renderQuestions(data)}
+      </Accordion>
     </Container>
   );
 }

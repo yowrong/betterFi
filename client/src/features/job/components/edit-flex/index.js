@@ -66,7 +66,7 @@ const EditFlex = (props) => {
 
             }),
         });
-        setCoverLetter(res.coverLetter)
+        // setCoverLetter(res.coverLetter)
     }
     return (
         <>
