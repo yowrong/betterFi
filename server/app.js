@@ -338,4 +338,4 @@ app.post('/api/flex', async (req, res) => {
     res.send({ coverLetter })
 })
 
-app.listen(3000, () => console.log(`Server started on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
