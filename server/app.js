@@ -24,15 +24,17 @@ app.use(bodyParser.json());
 // set up logger
 app.use(logger('dev'));
 
-const SKILLS = ["Angular", "Vue", "Bootstrap",
-    "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL",
-    "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify",
-    "Firebase", "Jest", "Mocha", "Chai", "Selenium", "Jenkins", "NPM", "Yarn", "Bash",
-    "PowerShell", "Python", "Java", "C++", "C#", "Android", "HTML", "CSS",
+const SKILLS = ["Python", "Java", "C++", "C#", "Android", "HTML", "CSS",
     "JavaScript", "React", "Node", "Express", "MongoDB", "Agile", "HTTP",
     "PHP", "SQL", "Git", "GitHub", "Linux", "Windows", "MacOS", "iOS",
-    "Swift", "Kotlin", "Ruby", "Ruby on Rails"]
+    "Swift", "Kotlin", "Ruby", "Ruby on Rails", "Angular", "Vue", "Bootstrap",
+    "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL", "Docker",
+    "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify",
+    "Firebase", "Jest", "Mocha", "Chai", "Selenium", "Jenkins", "NPM", "Yarn",
+    "Bash", "PowerShell",
+]
 
+console.log(SKILLS.length);
 const VIDEOS = [
     "hQAHSlTtcmY",
     "xk4_1vDrzzo",
@@ -112,8 +114,8 @@ async function getResumeFromGPT(prompt) {
 
 
 // Conclusion paragraph
-getResumeFromGPT("Write a conclusion paragraph for a cover letter for a software engineering position." +
-"The letter should reitrate your education at BCIT, your skills including Java, Javascript, SQL, and express your enthusiasm for the job and Fortinet.")
+// getResumeFromGPT("Write a conclusion paragraph for a cover letter for a software engineering position." +
+//     "The letter should reitrate your education at BCIT, your skills including Java, Javascript, SQL, and express your enthusiasm for the job and Fortinet.")
 
 // getResumeFromGPT("I possess the following technical skills: Java, Javascript, Pyton. Could you please generate a paragraph describing how each skill would benefit me in a software developer role?")
 
@@ -167,33 +169,33 @@ async function getResumeFromGPT(prompt) {
     }
 }
 
-// async function getYTData(skill) {
-//     return new Promise(res => {
-//         const youtube = google.youtube({
-//             version: 'v3',
-//             auth: YT_KEY
-//         });
+async function getYTData(skill) {
+    return new Promise(res => {
+        const youtube = google.youtube({
+            version: 'v3',
+            auth: YT_KEY
+        });
 
-//         youtube.search.list({
-//             part: 'id,snippet',
-//             q: skill + " tutorial",
-//             type: 'video',
-//             maxResults: 5,
-//         }, (err, data) => {
-//             if (err) {
-//                 console.error(`Error searching for videos with keyword ${skill}: ${err}`);
-//                 return res([]);
-//             }
-//             const videos = data.data.items.map(item => {
-//                 const { videoId } = item.id;
-//                 const { title, description, thumbnails } = item.snippet;
-//                 return { video: videoId, title, description, thumbnail: thumbnails.default.url };
-//             });
-//             console.log(`Found ${videos.length} videos with keyword ${skill}`);
-//             return res(videos);
-//         })
-//     })
-// }
+        youtube.search.list({
+            part: 'id,snippet',
+            q: skill + " tutorial",
+            type: 'video',
+            maxResults: 5,
+        }, (err, data) => {
+            if (err) {
+                console.error(`Error searching for videos with keyword ${skill}: ${err}`);
+                return res([]);
+            }
+            const videos = data.data.items.map(item => {
+                const { videoId } = item.id;
+                const { title, description, thumbnails } = item.snippet;
+                return { video: videoId, title, description, thumbnail: thumbnails.default.url };
+            });
+            console.log(`Found ${videos.length} videos with keyword ${skill}`);
+            return res(videos);
+        })
+    })
+}
 
 // // promptGPT("Can you generate a list of 10 youtube videos, returning the title and link, specifically about the following skill: Java")
 
@@ -208,7 +210,6 @@ async function getResumeFromGPT(prompt) {
 //     }
 // }
 
-// createRandomData();
 
 class APIError extends Error {
     constructor(status, message) {
@@ -315,7 +316,7 @@ app.post('/api/explore', async (req, res) => {
         // Get skills from database
 
         const skills = await Skill.find({ title: { $in: skillsFromArray } });
-        return res.send({skills, jobTitle, company})
+        return res.send({ skills, jobTitle, company })
     } catch (error) {
         console.error(error);
         res.status(error.status).json({ message: error.message });
@@ -330,7 +331,7 @@ app.post('/api/explore', async (req, res) => {
 app.post('/api/flex', async (req, res) => {
 
     // See if user experience is in body
-    const { experience, skills } = req.body;
+    const { experience, skills, jobTitle, userName, companyTitle } = req.body;
     if (!experience) return res.status(400).json({ message: "No experience provided" });
     if (!skills) return res.status(400).json({ message: "No skills provided" });
 
