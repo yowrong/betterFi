@@ -10,6 +10,7 @@ const EditPractice = () => {
 
     useEffect(() => {
         const skills = JSON.parse(localStorage.getItem('skills'));
+        console.log(skills)
         setData(skills
             .map(({ title, questions }) => ({ title, questions: questions.slice(1) }))
         )
@@ -20,7 +21,8 @@ const EditPractice = () => {
     useEffect(() => {
         if (data) {
             const display = data
-            ?.find((s) => s['title'] === section);
+                ?.find((s) => s['title'] === section);
+            console.log(data);
             display && setDisplayData(display['questions']);
         }
     }, [section, data])
@@ -31,8 +33,9 @@ const EditPractice = () => {
 
     return (
         <div style={{display: 'flex', flexDirection: 'column'}}>
-            <GradientSegmentedControl sections={sections} onSectionChange={onSectionChange}/>
-            <FaqSimple data={displayData}/>
+            {/* <GradientSegmentedControl sections={sections} onSectionChange={onSectionChange}/> */}
+            {/* <FaqSimple data={displayData}/> */}
+            <FaqSimple data={data}/>
         </div>
 
     );

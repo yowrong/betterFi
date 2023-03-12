@@ -35,7 +35,8 @@ const FaqSimple = ({ data }) => {
   const { classes } = useStyles();
 
   const renderQuestions = (questions) => {
-    return questions.map((q, i) => (
+    console.log(questions);
+    return questions?.map((q, i) => (
       <Accordion.Item className={classes.item} value={`q-${i}`}>
         <Accordion.Control>{q}</Accordion.Control>
         <Accordion.Panel>
@@ -59,10 +60,10 @@ const FaqSimple = ({ data }) => {
 
   return (
     <Container size="sm" className={classes.wrapper}>
-      {/* {renderSections(data)} */}
-      <Accordion variant="separated">
+      {renderSections(data)}
+      {/* <Accordion variant="separated">
         {data && renderQuestions(data)}
-      </Accordion>
+      </Accordion> */}
     </Container>
   );
 }
