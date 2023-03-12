@@ -24,15 +24,15 @@ app.use(bodyParser.json());
 // set up logger
 app.use(logger('dev'));
 
-const SKILLS = ["Angular", "Vue", "Bootstrap",
-    "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL",
-    "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify",
-    "Firebase", "Jest", "Mocha", "Chai", "Selenium", "Jenkins", "NPM", "Yarn", "Bash",
-    "PowerShell", "Python", "Java", "C++", "C#", "Android", "HTML", "CSS",
+const SKILLS = ["Python", "Java", "C++", "C#", "Android", "HTML", "CSS",
     "JavaScript", "React", "Node", "Express", "MongoDB", "Agile", "HTTP",
     "PHP", "SQL", "Git", "GitHub", "Linux", "Windows", "MacOS", "iOS",
-    "Swift", "Kotlin", "Ruby", "Ruby on Rails"]
-
+    "Swift", "Kotlin", "Ruby", "Ruby on Rails", "Angular", "Vue", "Bootstrap",
+    "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL", "Docker",
+    "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify",
+    "Firebase", "Jest", "Mocha", "Chai", "Selenium", "Jenkins", "NPM", "Yarn",
+    "Bash", "PowerShell",
+]
 const VIDEOS = [
     "hQAHSlTtcmY",
     "xk4_1vDrzzo",
