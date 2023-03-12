@@ -8,6 +8,7 @@ const axios = require('axios');
 const { JSDOM } = require("jsdom");
 const fs = require('fs');
 const { google } = require('googleapis')
+const cors = require('cors')
 
 require('dotenv').config()
 
@@ -18,12 +19,12 @@ GPT_MODEL_ENGINE = 'text-davinci-002'
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://bcit:0pyQMqP63d5dp7kN@cluster0.oskyzu1.mongodb.net/?retryWrites=true&w=majority");
 
-
 app.use(bodyParser.json());
 
 // set up logger
 app.use(logger('dev'));
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 // Default Skills
@@ -32,6 +33,12 @@ const SKILLS = ["HTML", "CSS", "JavaScript", "React", "Node", "Express", "MongoD
 =======
 =======
 >>>>>>> a257c38 (Add controller class to server branch)
+=======
+app.use(cors({
+    origin: 'http://localhost:3000',
+}))
+
+>>>>>>> 2219e36 (Modify Controller and Pull server in)
 const SKILLS = ["Python", "Java", "C++", "C#", "Android", "HTML", "CSS",
     "JavaScript", "React", "Node", "Express", "MongoDB", "Agile", "HTTP",
     "PHP", "SQL", "Git", "GitHub", "Linux", "Windows", "MacOS", "iOS",
@@ -329,6 +336,7 @@ async function generateCoverLetter(skills, experience, jobTitle, education, comp
 // once it has the skills it will return the skill object
 // with the tutorials
 app.post('/api/explore', async (req, res) => {
+    console.log('explore req received')
     const { url } = req.body;
 
 <<<<<<< HEAD
