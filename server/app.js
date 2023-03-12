@@ -85,13 +85,13 @@ async function getResumeFromGPT(prompt) {
     payload = {
         "prompt": prompt,
         "max_tokens": 1024,
-        "temperature": 1,
+        "temperature": 0.5,
         "model": GPT_MODEL_ENGINE,
     }
 
     try {
         let response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
-        console.log(response.data.choices[0].text);
+        // console.log(response.data.choices[0].text);
         // console.log(response.data.choices)
     } catch (error) {
         throw new APIError(500, "Error generating resume");
@@ -100,11 +100,24 @@ async function getResumeFromGPT(prompt) {
 
 
 
-// getResumeFromGPT("Generate a four-paragraph-long cover letter for me for " +
+// getResumeFromGPT("Write a cover letter for me for " +
 // "a software developer position at Fortinet, based on the following user information. " + 
 // "Name: Josef. Skills: Java, Javascript, SQL. Education: BCIT 2021. Experience: Business Intelligence at BC Cancer (2020)." +
-// "Please include a short section about how my interests align with the company.")
+// "Please write a paragraph on each skill and how it would relate to the position.")
 
+
+// Intro paragraph
+//getResumeFromGPT("Write an introduction paragraph for a cover letter addressed to a hiring manager for a software engineering position." +
+//"The letter should briefly introduce yourself and your education at BCIT, your skills including Java, Javascript, SQL, and express your enthusiasm for the job and Fortinet.")
+
+
+// Conclusion paragraph
+getResumeFromGPT("Write a conclusion paragraph for a cover letter for a software engineering position." +
+"The letter should reitrate your education at BCIT, your skills including Java, Javascript, SQL, and express your enthusiasm for the job and Fortinet.")
+
+// getResumeFromGPT("I possess the following technical skills: Java, Javascript, Pyton. Could you please generate a paragraph describing how each skill would benefit me in a software developer role?")
+
+//getResumeFromGPT("I am applying for a job and and have a skill they are looking for, SQL, I have two projects i worked on. An ASP.NET MVC project, and creating Triggers for a school project. Can you write me a paragraph for my coverletter")
 
 async function getQuestionsFromGPT(prompt) {
     headers = {
@@ -164,7 +177,6 @@ async function getQuestionsFromGPT(prompt) {
 
 // // Here we will create random data for our database
 // async function createRandomData() {
-//     await Skill.deleteMany();
 //     for (var i = 0; i < SKILLS.length; i++) {
 //         let tutorials = await getYTData(SKILLS[i])
 //         let questions = await getQuestionsFromGPT(`Can you generate 10 technical interview questions about the following skill: ${SKILLS[i]}`)
@@ -220,6 +232,13 @@ function parseHTML(html) {
     // Get skills container
     const skillsContainer = $.window.document.querySelector('.show-more-less-html__markup');
 
+    // get job title 
+    const jobTitle = $.window.document.querySelector('.sub-nav-cta__header').textContent.trim();
+    console.log(jobTitle);
+
+    // get company title
+    const company = $.window.document.querySelector('.topcard__org-name-link').textContent.trim();
+    console.log(company);
 
     // Get ul from skills container
     const skills = skillsContainer.querySelectorAll('li');
@@ -227,8 +246,8 @@ function parseHTML(html) {
 
     skillsArray = skillsArray.map(s => s.textContent)
 
-    // Return skills
-    return skillsArray;
+    // Return job title and skills
+    return [jobTitle, company, skillsArray];
 }
 
 
@@ -244,14 +263,14 @@ app.post('/api/explore', async (req, res) => {
 
         // fs.writeFileSync('test1.html', html);
 
-        // Parse HTML for skills
-        const skillSentences = parseHTML(html);
-        const skills = extractSkillsFromPosting(skillSentences);
+        // Parse HTML for job title and skills
+        const [jobTitle, company, skillSentences] = parseHTML(html);
+        const skillsFromArray = extractSkillsFromPosting(skillSentences);
 
         // Get skills from database
 
-        const skillsFromDB = await Skill.find({ title: { $in: skills } });
-        return res.send(skillsFromDB)
+        const skills = await Skill.find({ title: { $in: skillsFromArray } });
+        return res.send({skills, jobTitle, company})
     } catch (error) {
         console.error(error);
         res.status(error.status).json({ message: error.message });
