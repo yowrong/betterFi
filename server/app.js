@@ -5,8 +5,9 @@ const logger = require('morgan');
 const mongoose = require("mongoose");
 const Skill = require('./models/Skill');
 const axios = require('axios');
+require('dotenv').config()
 
-// API_KEY = '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'
+API_KEY = process.env.GPT_API_KEY
 GPT_MODEL_ENGINE = 'text-davinci-002'
 
 // Connect to the Mongo DB
@@ -19,7 +20,7 @@ app.use(bodyParser.json());
 app.use(logger('dev'));
 
 // Default Skills
-const SKILLS = ["HTML", "CSS", "JavaScript", "React", "Node", "Express", "MongoDB", "Python", "Java", "C++", "C#", "PHP", "SQL", "Git", "GitHub"]
+const SKILLS = ["HTML", "CSS"] // "JavaScript", "React", "Node", "Express", "MongoDB", "Python", "Java", "C++", "C#", "PHP", "SQL", "Git", "GitHub"]
 // , "Linux", "Windows", "MacOS", "Android", "iOS", "Swift", "Kotlin", "Ruby", "Ruby on Rails", "Angular", "Vue", "Bootstrap", "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL", "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify", "Firebase", "Jest", "Mocha", "Chai", "Cypress", "Selenium", "Jenkins", "Travis CI", "Circle CI", "Babel", "Webpack", "Gulp", "Grunt", "NPM", "Yarn", "Bash", "Zsh", "PowerShell", "Bash on Windows", "Bash on Ubuntu on Windows", "Bash on macOS", "Bash on Android", "Bash on iOS", "Bash on Chrome OS", "Bash on Linux", "Bash on FreeBSD", "Bash on OpenBSD", "Bash on NetBSD", "Bash on DragonFly BSD", "Bash on Solaris", "Bash on AIX", "Bash on HP-UX", "Bash on IRIX", "Bash on OpenIndiana", "Bash on Oracle Solaris", "Bash on Oracle Linux", "Bash on RHEL", "Bash on CentOS", "Bash on Fedora", "Bash on SUSE", "Bash on openSUSE", "Bash on Arch Linux", "Bash on Manjaro", "Bash on Alpine Linux", "Bash on Gentoo", "Bash on Slackware", "Bash on Void Linux", "Bash on Solus", "Bash on Mageia", "Bash on PCLinuxOS", "Bash on Deepin", "Bash on elementary OS", "Bash on Linux Mint", "Bash on Ubuntu MATE", "Bash on Ubuntu Budgie", "Bash on Kubuntu", "Bash on Xubuntu", "Bash on Lubuntu", "Bash on Ubuntu Kylin"]
 const VIDEOS = [
     "hQAHSlTtcmY",
@@ -59,19 +60,19 @@ async function promptGPT(prompt) {
         "temperature": 0.5,
         "model": GPT_MODEL_ENGINE
     }
-    let response;
+    let questions;
 
     try {
-        response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
-        console.log(response.data);
+        let response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
+        questions = response.data.choices[0].text.split('\n').map(question => question.replace(/^\d+.\s+/, ''))
+        // Remove empty questions and whilte space
+        questions = questions.filter(question => question.trim() !== '');
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+        throw new APIError(500, "Error generating questions");
     }
-    return response;
+    return questions;
 }
-
-promptGPT("Can you generate 10 technical interview questions about the following skill: object-oriented programming")
-
 
 // Here we will create random data for our database
 async function createRandomData() {
@@ -84,18 +85,19 @@ async function createRandomData() {
         // New Skill
         const s = new Skill({
             title: skill,
-            tutorials: tutorials
-
+            tutorials: tutorials,
+            questions: await promptGPT(`Can you generate 10 technical interview questions about the following skill: ${skill}`)
         })
         await s.save()
     })
 }
 
+createRandomData();
+
 class APIError extends Error {
     constructor(status, message) {
-        super();
+        super(message);
         this.status = status;
-        this.message = message;
     }
 }
 
@@ -104,14 +106,15 @@ class APIError extends Error {
 const PORT = process.env.PORT || 3000;
 
 async function getHTML(url) {
-    if (url == undefined) throw APIError(400, "No URL provided");
+    if (url == undefined) throw new APIError(400, "No URL provided");
     const res = await axios.get(url);
 
+    console.log(res.headers['content-type']);
     // Check res status
-    if (res.status !== 200) throw APIError(404, "Could not get HTML");
+    if (res.status !== 200) throw new APIError(404, "Could not get HTML");
 
     // Check if body is HTML 
-    if (res.headers['content-type'] !== 'text/html') throw Error(400, "Not HTML");
+    if (!res.headers['content-type'].includes("text/html")) throw new Error(400, "Not HTML");
 
     // Return HTML
     return res.data;
@@ -126,7 +129,7 @@ app.post('/api/explore', async (req, res) => {
 
     try {
         const html = await getHTML(url);
-
+        console.log(html);
     } catch (error) {
         console.error(error);
         res.status(error.status).json({ message: error.message });

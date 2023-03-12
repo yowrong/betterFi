@@ -18,8 +18,7 @@ const SkillSchema = new mongoose.Schema({
             required: true
         },
     }],
-
-    // questions: [Strings]
+    questions: [String]
 });
 
 
