@@ -34,7 +34,6 @@ export const useStyles = createStyles((theme) => ({
         overflowY: 'scroll',
         '-ms-overflow-style': 'none',
         'scrollbar-width': 'none',
-        padding: rem(20),
         marginBottom: rem(20),
         width: '100%',
         flex: 1,

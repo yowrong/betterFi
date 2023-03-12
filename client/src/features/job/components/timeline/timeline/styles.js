@@ -24,7 +24,7 @@ export const useStyles = createStyles((theme) => ({
   
     done: {
       '.mantine-Timeline-itemBullet': {
-        background: 'red'
+        background: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.white,
       },
   
       '.mantine-Timeline-itemTitle': {
@@ -34,7 +34,7 @@ export const useStyles = createStyles((theme) => ({
   
     active: {
       '.mantine-Timeline-itemBullet': {
-        background: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.white,
+        background: 'red'
       },
   
       '.mantine-Timeline-itemTitle': {
