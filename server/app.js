@@ -3,7 +3,6 @@ const app = express();
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require("mongoose");
-const Skill = require('./models/Skill');
 const axios = require('axios');
 require('dotenv').config()
 
@@ -39,13 +38,6 @@ const VIDEOS = [
     "tRZGeaHPoaw",
     "h0nxCDiD-zg",
     "V1y-mbWM3B8",
-    "F9UC9DY-vIU",
-    "FXpIoQ_rT_c",
-    "7r4xVDI2vho",
-    "-MTSQjw5DrM",
-    "pTFZFxd4hOI",
-    "fgdpvwEWJ9M",
-
 ]
 
 
@@ -76,12 +68,13 @@ promptGPT("Can you generate 10 technical interview questions about the following
 
 
 // Here we will create random data for our database
-async function createRandomData() {
-    await Skill.deleteMany();
-    SKILLS.forEach(async (skill) => {
-        let tutorials = []
+function createRandomData() {
+    SKILLS.forEach(async () => {
+        rnd = Math.random()
+
+        videos = []
         for (let i = 0; i < 3; i++) {
-            tutorials.push({ video: VIDEOS[Math.floor(Math.random() * VIDEOS.length)], description: "Random Description" })
+            videos.push(VIDEOS[Math.floor(Math.random() * VIDEOS.length)])
         }
         // New Skill
         const s = new Skill({
@@ -89,7 +82,7 @@ async function createRandomData() {
             tutorials: tutorials
 
         })
-        await s.save()
+        await skill.save()
     })
 }
 
