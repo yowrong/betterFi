@@ -1,50 +1,6 @@
-import { useTheme } from '@emotion/react';
-import { Timeline, Text, createStyles } from '@mantine/core';
+import { Timeline, Text } from '@mantine/core';
 import timelineConstants from './constant';
-
-const useStyles = createStyles((theme) => ({
-  root: {
-    maxWidth: 250,
-  },
-
-  section: {
-    fontSize: theme.fontSizes.sm,
-    cursor: 'pointer',
-
-    '&:hover, &:active': {
-
-      '.mantine-Timeline-itemTitle': {
-        fontWeight: 600,
-        color: 'red'
-      },
-    },
-  },
-
-  description: {
-    fontSize: theme.fontSizes.xs,
-  },
-
-  done: {
-    '.mantine-Timeline-itemBullet': {
-      background: 'red'
-    },
-
-    '.mantine-Timeline-itemTitle': {
-      fontWeight: 600,
-    }
-  },
-
-  active: {
-    '.mantine-Timeline-itemBullet': {
-      background: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.white,
-    },
-
-    '.mantine-Timeline-itemTitle': {
-      fontWeight: 600,
-      color: 'red',
-    }
-  }
-}));
+import { useStyles } from './styles';
 
 const BetterTimeline = ({ active, current, onPressed }) => {
   const { classes, cx } = useStyles();
