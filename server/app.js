@@ -25,16 +25,8 @@ app.use(bodyParser.json());
 app.use(logger('dev'));
 
 // Default Skills
-<<<<<<< HEAD
 const SKILLS = ["HTML", "CSS", "JavaScript", "React", "Node", "Express", "MongoDB", "Python", "Java", "C++", "C#", "PHP", "SQL", "Git", "GitHub"]
 // , "Linux", "Windows", "MacOS", "Android", "iOS", "Swift", "Kotlin", "Ruby", "Ruby on Rails", "Angular", "Vue", "Bootstrap", "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL", "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify", "Firebase", "Jest", "Mocha", "Chai", "Cypress", "Selenium", "Jenkins", "Travis CI", "Circle CI", "Babel", "Webpack", "Gulp", "Grunt", "NPM", "Yarn", "Bash", "Zsh", "PowerShell", "Bash on Windows", "Bash on Ubuntu on Windows", "Bash on macOS", "Bash on Android", "Bash on iOS", "Bash on Chrome OS", "Bash on Linux", "Bash on FreeBSD", "Bash on OpenBSD", "Bash on NetBSD", "Bash on DragonFly BSD", "Bash on Solaris", "Bash on AIX", "Bash on HP-UX", "Bash on IRIX", "Bash on OpenIndiana", "Bash on Oracle Solaris", "Bash on Oracle Linux", "Bash on RHEL", "Bash on CentOS", "Bash on Fedora", "Bash on SUSE", "Bash on openSUSE", "Bash on Arch Linux", "Bash on Manjaro", "Bash on Alpine Linux", "Bash on Gentoo", "Bash on Slackware", "Bash on Void Linux", "Bash on Solus", "Bash on Mageia", "Bash on PCLinuxOS", "Bash on Deepin", "Bash on elementary OS", "Bash on Linux Mint", "Bash on Ubuntu MATE", "Bash on Ubuntu Budgie", "Bash on Kubuntu", "Bash on Xubuntu", "Bash on Lubuntu", "Bash on Ubuntu Kylin"]
-=======
-const SKILLS = ["Android", "HTML", "CSS", "JavaScript", "React", "Node", "Express", "MongoDB"
-, "Python", "Java", "C++", "C#", "PHP", "SQL", "Git", "GitHub", "Linux", "Windows", "MacOS", "iOS"
-, "Swift", "Kotlin", "Ruby", "Ruby on Rails", "Angular", "Vue", "Bootstrap", "Materialize", "jQuery"
-, "AJAX", "JSON", "XML", "REST", "GraphQL", "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure"
-, "Heroku", "Netlify", "Firebase", "Jest", "Mocha", "Chai", "Selenium", "Jenkins",  "NPM", "Yarn", "Bash", "PowerShell"]
->>>>>>> 1dfe30f (added more links to VIDEOS)
 const VIDEOS = [
     "hQAHSlTtcmY",
     "xk4_1vDrzzo",
@@ -57,32 +49,10 @@ const VIDEOS = [
     "-MTSQjw5DrM",
     "pTFZFxd4hOI",
     "fgdpvwEWJ9M",
-<<<<<<< HEAD
-=======
-    "EOfCEhWq8sg",
-    "kUMe1FH4CHE",
-    "OXGznpKZ_sA",
-    "PkZNo7MFNFg",
-    "Ke90Tje7VS0",
-    "ENrzD9HAZK4",
-    "L72fhGm1tfE",
-    "pWbMrx5rVBE",
-    "_uQrJ0TkZlc",
-    "xk4_1vDrzzo", 
-    "vLnPwxZdW4Y", 
-    "gfkTfcpWqAY", 
-    "BUCiSSyIGGU", 
-    "HXV3zeQKqGY", 
-    "xT8oP0wy-A0",
-    "F2ojC6TNwws", 
-    "8wZ2ZD--VTk", 
-    "3qBXWUpoPHo",
-    "3c-iBn73dDE"
->>>>>>> 1dfe30f (added more links to VIDEOS)
 ]
 
 
-async function promptGPT(prompt) {
+async function getQuestionsFromGPT(prompt) {
     headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${API_KEY}`
@@ -98,10 +68,10 @@ async function promptGPT(prompt) {
 
     try {
         let response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
-        //questions = response.data.choices[0].text.split('\n').map(question => question.replace(/^\d+.\s+/, ''))
+        questions = response.data.choices[0].text.split('\n').map(question => question.replace(/^\d+.\s+/, ''))
         // Remove empty questions and whilte space
-        //questions = questions.filter(question => question.trim() !== '');
-        console.log(response.data.choices[0].text)
+        questions = questions.filter(question => question.trim() !== '');
+        // console.log(response.data.choices[0].text)
     } catch (error) {
         // console.error(error);
         throw new APIError(500, "Error generating questions");
@@ -109,12 +79,8 @@ async function promptGPT(prompt) {
     return questions;
 }
 
-<<<<<<< HEAD
 // promptGPT("Can you generate 10 technical interview questions about the following skill: object-oriented programming")
 
-=======
-// promptGPT("Can you generate a list of 10 youtube videos, returning the title and link, specifically about the following skill: Java")
->>>>>>> 1dfe30f (added more links to VIDEOS)
 
 // Here we will create random data for our database
 async function createRandomData() {
