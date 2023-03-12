@@ -10,27 +10,64 @@ const useStyles = createStyles((theme) => ({
   section: {
     fontSize: theme.fontSizes.sm,
     cursor: 'pointer',
+
+    '&:hover, &:active': {
+
+      '.mantine-Timeline-itemTitle': {
+        fontWeight: 600,
+        color: 'red'
+      },
+    },
   },
 
   description: {
-    fontSize: theme.fontSizes.xs
+    fontSize: theme.fontSizes.xs,
+  },
+
+  done: {
+    '.mantine-Timeline-itemBullet': {
+      background: 'red'
+    },
+
+    '.mantine-Timeline-itemTitle': {
+      fontWeight: 600,
+    }
+  },
+
+  active: {
+    '.mantine-Timeline-itemBullet': {
+      background: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.white,
+    },
+
+    '.mantine-Timeline-itemTitle': {
+      fontWeight: 600,
+      color: 'red',
+    }
   }
 }));
 
-const BetterTimeline = (active) => {
-  const theme = useTheme();
+const BetterTimeline = ({ active, current, onPressed }) => {
   const { classes, cx } = useStyles();
 
   const renderTimeline = (items) => {
-    return items.map((i) => {
+    return items.map((i, index) => {
       return (
         <Timeline.Item 
-          className={classes.section}
+          className={cx(classes.section, { 
+            [classes.done]: index <= active,
+            [classes.active]: current === index, })}
           key={i.title}
-          title={i.title}
-          lineActive
-          color={theme.colors.primary}
+          lineVariant={index < active ? 'solid' : 'dashed' }
+          title={
+            <Text 
+              className={classes.title}
+              size="sm">
+                {i.title}
+            </Text>
+          }
+          color='red'
           align='right'
+          onClick={() => {onPressed(index)}}
         >
           <Text color="dimmed" size="xs">{i.description}</Text>
         </Timeline.Item>
@@ -45,7 +82,6 @@ const BetterTimeline = (active) => {
       active={active}
       bulletSize={16}
       lineWidth={2}
-      color={theme.colors.primary}
       align='right'
     >
       {renderTimeline(timelineConstants)}

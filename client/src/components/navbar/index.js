@@ -13,7 +13,7 @@ import { ReactComponent as Logo } from '../../assets/logo_text.svg';
 import { ReactComponent as LogoDark } from '../../assets/logo_text_dark.svg';
 import { routes } from '../../config/routes.js';
 
-const HEADER_HEIGHT = rem(60);
+const HEADER_HEIGHT = rem(75);
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -55,7 +55,6 @@ const useStyles = createStyles((theme) => ({
 
   link: {
     display: 'block',
-    lineHeight: 1,
     padding: `${rem(8)} ${rem(12)}`,
     borderRadius: theme.radius.md,
     textDecoration: 'none',
@@ -103,7 +102,7 @@ export const NavBar = ({ isActive = '/', }) => {
 
   return (
     <Header 
-        height={HEADER_HEIGHT}
+        height={rem(75)}
         className={classes.root}
     >
       <Container className={classes.header} fluid>
