@@ -25,10 +25,13 @@ app.use(bodyParser.json());
 app.use(logger('dev'));
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Default Skills
 const SKILLS = ["HTML", "CSS", "JavaScript", "React", "Node", "Express", "MongoDB", "Python", "Java", "C++", "C#", "PHP", "SQL", "Git", "GitHub"]
 // , "Linux", "Windows", "MacOS", "Android", "iOS", "Swift", "Kotlin", "Ruby", "Ruby on Rails", "Angular", "Vue", "Bootstrap", "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL", "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify", "Firebase", "Jest", "Mocha", "Chai", "Cypress", "Selenium", "Jenkins", "Travis CI", "Circle CI", "Babel", "Webpack", "Gulp", "Grunt", "NPM", "Yarn", "Bash", "Zsh", "PowerShell", "Bash on Windows", "Bash on Ubuntu on Windows", "Bash on macOS", "Bash on Android", "Bash on iOS", "Bash on Chrome OS", "Bash on Linux", "Bash on FreeBSD", "Bash on OpenBSD", "Bash on NetBSD", "Bash on DragonFly BSD", "Bash on Solaris", "Bash on AIX", "Bash on HP-UX", "Bash on IRIX", "Bash on OpenIndiana", "Bash on Oracle Solaris", "Bash on Oracle Linux", "Bash on RHEL", "Bash on CentOS", "Bash on Fedora", "Bash on SUSE", "Bash on openSUSE", "Bash on Arch Linux", "Bash on Manjaro", "Bash on Alpine Linux", "Bash on Gentoo", "Bash on Slackware", "Bash on Void Linux", "Bash on Solus", "Bash on Mageia", "Bash on PCLinuxOS", "Bash on Deepin", "Bash on elementary OS", "Bash on Linux Mint", "Bash on Ubuntu MATE", "Bash on Ubuntu Budgie", "Bash on Kubuntu", "Bash on Xubuntu", "Bash on Lubuntu", "Bash on Ubuntu Kylin"]
 =======
+=======
+>>>>>>> a257c38 (Add controller class to server branch)
 const SKILLS = ["Python", "Java", "C++", "C#", "Android", "HTML", "CSS",
     "JavaScript", "React", "Node", "Express", "MongoDB", "Agile", "HTTP",
     "PHP", "SQL", "Git", "GitHub", "Linux", "Windows", "MacOS", "iOS",
@@ -38,9 +41,12 @@ const SKILLS = ["Python", "Java", "C++", "C#", "Android", "HTML", "CSS",
     "Firebase", "Jest", "Mocha", "Chai", "Selenium", "Jenkins", "NPM", "Yarn",
     "Bash", "PowerShell",
 ]
+<<<<<<< HEAD
 
 console.log(SKILLS.length);
 >>>>>>> 6c0cd50 (Added api/flex endpoint.)
+=======
+>>>>>>> a257c38 (Add controller class to server branch)
 const VIDEOS = [
     "hQAHSlTtcmY",
     "xk4_1vDrzzo",
