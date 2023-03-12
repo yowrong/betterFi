@@ -79,7 +79,38 @@ async function getQuestionsFromGPT(prompt) {
     return questions;
 }
 
+<<<<<<< HEAD
 // promptGPT("Can you generate 10 technical interview questions about the following skill: object-oriented programming")
+=======
+async function getResumeFromGPT(prompt) {
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+    }
+
+    payload = {
+        "prompt": prompt,
+        "max_tokens": 1024,
+        "temperature": 0.5,
+        "model": GPT_MODEL_ENGINE,
+    }
+
+    try {
+        let response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
+        console.log(response.data.choices[0].text);
+        // console.log(response.data.choices)
+    } catch (error) {
+        throw new APIError(500, "Error generating resume");
+    }
+}
+
+// async function getYTData(skill) {
+//     return new Promise(res => {
+//         const youtube = google.youtube({
+//             version: 'v3',
+//             auth: YT_KEY
+//         });
+>>>>>>> c36ba74 (Added generateCoverLetter function)
 
 
 // Here we will create random data for our database
@@ -162,6 +193,29 @@ function parseHTML(html) {
     return skillsArray;
 }
 
+// This function will take a string and return an array of skills
+// and an experiences and return a cover letter text
+async function generateCoverLetter(skills, experience, jobTitle, companyName) {
+
+    let s = skills.filter(s => experience.skills.contains(s))
+
+    let skillSentance = s.map(s => s + ", ")
+
+    // Generate Intro
+    let intro = getResumeFromGPT(`Write an introduction paragraph for a cover letter addressed to a hiring manager for a ${jobTitle} position at ${companyName}.` +
+        `The letter should briefly introduce yourself and your education at BCIT, your skills including ${skillSentance} ,and express your enthusiasm for the job and Fortinet.`)
+
+    // Generate Skills
+    let skillText = [];
+    for (var i = 0; i < s.length; i++) skillText.push(await getResumeFromGPT())
+
+    // Genrate Conclusion
+    let conclusion = getResumeFromGPT(`Write a conclusion paragraph for a cover letter for a ${jobTitle} position at ${companyName}.` +
+        `The letter should reitrate your education at BCIT, your skills including ${skillSentance}, and express your enthusiasm for the job and Fortinet.`)
+
+    let meat = skillText.map(s => s + "\n")
+    return intro + "\n" + meat + "\n" + conclusion;
+}
 
 // This endpoint will recieve a url from the body
 // and get the HTML and parse it for the skills
@@ -177,9 +231,17 @@ app.post('/api/explore', async (req, res) => {
 // This endpoint will recieve a users job experience
 // and a list of skills they have currently, the api will
 // then make a call to chatGPT to createa a resume template
-app.post('/api/flex', (req, res) => {
+app.post('/api/flex', async (req, res) => {
 
+    // See if user experience is in body
+    const { experience, skills } = req.body;
+    if (!experience) return res.status(400).json({ message: "No experience provided" });
+    if (!skills) return res.status(400).json({ message: "No skills provided" });
 
+    // Create prompt
+    const coverLetter = await generateCoverLetter(experience, skills);
+
+    res.send({ coverLetter })
 })
 
 app.listen(3000, () => console.log(`Server started on port ${PORT}`));
