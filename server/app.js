@@ -265,7 +265,7 @@ async function generateCoverLetter(skills, experience, jobTitle, education, comp
     // Iterate through skills and filter out skills that are not in the experience skills
     for (let i = 0; i < skills.length; i++) {
         for (let j = 0; j < experience.length; j++) {
-            if (experience[j].skills.includes(skills[i].title.trim()))
+            if (experience[j].skills.includes(skills[i].title))
                 skillsSet.add(skills[i])
         }
     }
