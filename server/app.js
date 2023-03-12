@@ -5,6 +5,9 @@ const logger = require('morgan');
 const mongoose = require("mongoose");
 const Skill = require('./models/Skill');
 const axios = require('axios');
+const { JSDOM } = require("jsdom");
+const fs = require('fs');
+
 require('dotenv').config()
 
 API_KEY = process.env.GPT_API_KEY
@@ -109,7 +112,6 @@ async function getHTML(url) {
     if (url == undefined) throw new APIError(400, "No URL provided");
     const res = await axios.get(url);
 
-    console.log(res.headers['content-type']);
     // Check res status
     if (res.status !== 200) throw new APIError(404, "Could not get HTML");
 
@@ -120,6 +122,26 @@ async function getHTML(url) {
     return res.data;
 }
 
+// This function will parse the HTML and return the skills
+async function parseHTML(html) {
+    // Load HTML into cheerio
+    const $ = new JSDOM(html);
+
+    // Get skills container
+    const skillsContainer = $.window.document.querySelector('.show-more-less-html__markup');
+
+
+    // Get ul from skills container
+    const skills = skillsContainer.querySelectorAll('li');
+    const skillsArray = Array.from(skills);
+
+    skillsArray.forEach((s) => console.log(s.textContent))
+
+    // Return skills
+    return skillsArray;
+}
+
+
 // This endpoint will recieve a url from the body
 // and get the HTML and parse it for the skills
 // once it has the skills it will return the skill object
@@ -129,7 +151,13 @@ app.post('/api/explore', async (req, res) => {
 
     try {
         const html = await getHTML(url);
-        console.log(html);
+
+        fs.writeFileSync('test1.html', html);
+
+        // Parse HTML for skills
+        const skills = parseHTML(html);
+
+        return res.send('HELLO')
     } catch (error) {
         console.error(error);
         res.status(error.status).json({ message: error.message });
