@@ -7,10 +7,12 @@ const Skill = require('./models/Skill');
 const axios = require('axios');
 const { JSDOM } = require("jsdom");
 const fs = require('fs');
+const { google } = require('googleapis')
 
 require('dotenv').config()
 
 API_KEY = process.env.GPT_API_KEY
+YT_KEY = process.env.YT_API_KEY
 GPT_MODEL_ENGINE = 'text-davinci-002'
 
 // Connect to the Mongo DB
@@ -46,7 +48,6 @@ const VIDEOS = [
     "-MTSQjw5DrM",
     "pTFZFxd4hOI",
     "fgdpvwEWJ9M",
-
 ]
 
 
@@ -76,19 +77,45 @@ async function promptGPT(prompt) {
     return questions;
 }
 
+async function getYTData(video) {
+    return new Promise(res => {
+        const url = `https://www.youtube.com/watch?v=${video}`
+        const youtube = google.youtube({
+            version: 'v3',
+            auth: YT_KEY
+        });
+
+        youtube.videos.list({
+            id: video,
+            part: 'snippet'
+        }, (err, data) => {
+            if (err) {
+                console.log(err)
+                return res({ description: "", title: "" })
+            }
+            const { description, title } = data.data.items[0].snippet
+            res({ description, title })
+        })
+
+    })
+}
+
 // Here we will create random data for our database
 async function createRandomData() {
     await Skill.deleteMany();
     SKILLS.forEach(async (skill) => {
         let tutorials = []
         for (let i = 0; i < 3; i++) {
-            tutorials.push({ video: VIDEOS[Math.floor(Math.random() * VIDEOS.length)], description: "Random Description" })
+            const video = VIDEOS[Math.floor(Math.random() * VIDEOS.length)];
+            const { description, title } = await getYTData(video)
+
+            tutorials.push({ video: VIDEOS[Math.floor(Math.random() * VIDEOS.length)], description, title })
         }
-        // New Skill
+        // New Skill await promptGPT(`Can you generate 10 technical interview questions about the following skill: ${skill}`)
         const s = new Skill({
             title: skill,
             tutorials: tutorials,
-            questions: await promptGPT(`Can you generate 10 technical interview questions about the following skill: ${skill}`)
+            questions: ["blah", "blah", "blah", "blah", "blah", "blah", "blah", "blah", "blah", "blah"]
         })
         await s.save()
     })
@@ -172,7 +199,10 @@ app.post('/api/explore', async (req, res) => {
 
         skills.forEach(s => console.log(s));
 
-        return res.send('HELLO')
+        // Get skills from database
+
+        const skillsFromDB = await Skill.find({ title: { $in: skills } });
+        return res.send(skillsFromDB)
     } catch (error) {
         console.error(error);
         res.status(error.status).json({ message: error.message });
@@ -184,6 +214,9 @@ app.post('/api/explore', async (req, res) => {
 // This endpoint will recieve a users job experience
 // and a list of skills they have currently, the api will
 // then make a call to chatGPT to createa a resume template
-app.post('/api/flex', (req, res) => { })
+app.post('/api/flex', (req, res) => {
+
+
+})
 
 app.listen(3000, () => console.log(`Server started on port ${PORT}`));
