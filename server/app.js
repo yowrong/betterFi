@@ -3,11 +3,11 @@ const app = express();
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require("mongoose");
+const Skill = require('./models/Skill');
 const axios = require('axios');
 require('dotenv').config()
 
 API_KEY = process.env.GPT_API_KEY
-console.log(API_KEY)
 GPT_MODEL_ENGINE = 'text-davinci-002'
 
 // Connect to the Mongo DB
@@ -38,13 +38,20 @@ const VIDEOS = [
     "tRZGeaHPoaw",
     "h0nxCDiD-zg",
     "V1y-mbWM3B8",
+    "F9UC9DY-vIU",
+    "FXpIoQ_rT_c",
+    "7r4xVDI2vho",
+    "-MTSQjw5DrM",
+    "pTFZFxd4hOI",
+    "fgdpvwEWJ9M",
+
 ]
 
 
 async function promptGPT(prompt) {
     headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_KEY}`
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
     }
 
     payload = {
@@ -53,28 +60,30 @@ async function promptGPT(prompt) {
         "temperature": 0.5,
         "model": GPT_MODEL_ENGINE
     }
-    let response;
+    let questions;
 
     try {
-        response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
-        console.log(response.data);
+        let response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
+        questions = response.data.choices[0].text.split('\n').map(question => question.replace(/^\d+.\s+/, ''))
+        // Remove empty questions and whilte space
+        questions = questions.filter(question => question.trim() !== '');
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+        throw new APIError(500, "Error generating questions");
     }
-    return response;
+    return questions;
 }
 
-promptGPT("Can you generate 10 technical interview questions about the following skill: object-oriented programming")
+// promptGPT("Can you generate 10 technical interview questions about the following skill: object-oriented programming")
 
 
 // Here we will create random data for our database
-function createRandomData() {
-    SKILLS.forEach(async () => {
-        rnd = Math.random()
-
-        videos = []
+async function createRandomData() {
+    await Skill.deleteMany();
+    SKILLS.forEach(async (skill) => {
+        let tutorials = []
         for (let i = 0; i < 3; i++) {
-            videos.push(VIDEOS[Math.floor(Math.random() * VIDEOS.length)])
+            tutorials.push({ video: VIDEOS[Math.floor(Math.random() * VIDEOS.length)], description: "Random Description" })
         }
         // New Skill
         const s = new Skill({
@@ -82,10 +91,18 @@ function createRandomData() {
             tutorials: tutorials
 
         })
-        await skill.save()
+        await s.save()
     })
 }
 
+createRandomData();
+
+class APIError extends Error {
+    constructor(status, message) {
+        super(message);
+        this.status = status;
+    }
+}
 
 // createRandomData();
 
