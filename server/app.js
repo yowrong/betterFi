@@ -21,7 +21,7 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://bcit:0pyQMqP63d5dp7kN
 
 
 app.use(bodyParser.json());
-app.use(cors({origin: '*'}))
+app.use(cors({ origin: '*' }))
 
 // set up logger
 app.use(logger('dev'));
@@ -327,6 +327,8 @@ app.post('/api/explore', async (req, res) => {
 // and a list of skills they have currently, the api will
 // then make a call to chatGPT to createa a resume template
 app.post('/api/flex', async (req, res) => {
+
+    console.log(req.body);
 
     let { experience, skills, jobTitle, education, companyTitle } = req.body;
     if (!experience) return res.status(400).json({ message: "No experience provided" });

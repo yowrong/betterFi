@@ -24,7 +24,7 @@ export const getFlex = async (requestJson) => {
     }
 }
 
-export const getExplore= async (requestJson) => {
+export const getExplore = async (requestJson) => {
     const url = `${baseURL}explore`;
 
     try {
