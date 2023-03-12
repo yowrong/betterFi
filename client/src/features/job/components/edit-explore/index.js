@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { TextInput, Button, Container, rem, useMantineTheme } from '@mantine/core';
 import { toastTheme, useStyles } from './styles';
 import { notifications } from '@mantine/notifications';
+import { getExplore } from '../../../../../../server/controller';
 
 export const EditExplore = () => {
     const [focused, setFocused] = useState(false);
@@ -23,7 +24,7 @@ export const EditExplore = () => {
         setValue(e.target.value);
     }
 
-    const onBtnClick = () => {
+    const onBtnClick = async () => {
         console.log(`URL From EXPLORE: ${value}`);
         if (isValidURL(value)) {
             notifications.show({
@@ -56,7 +57,8 @@ export const EditExplore = () => {
                     
                 }),              
             });
-            // TODO: Make call to server
+            const res = await getExplore(value);
+            console.log(res);
         } else {
             notifications.show({
                 title: 'Oops! 😿',
