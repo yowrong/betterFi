@@ -72,7 +72,7 @@ const VIDEOS = [
 ]
 
 
-async function promptGPT(prompt) {
+async function getQuestionsFromGPT(prompt) {
     headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${API_KEY}`
@@ -88,10 +88,10 @@ async function promptGPT(prompt) {
 
     try {
         let response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
-        //questions = response.data.choices[0].text.split('\n').map(question => question.replace(/^\d+.\s+/, ''))
+        questions = response.data.choices[0].text.split('\n').map(question => question.replace(/^\d+.\s+/, ''))
         // Remove empty questions and whilte space
-        //questions = questions.filter(question => question.trim() !== '');
-        console.log(response.data.choices[0].text)
+        questions = questions.filter(question => question.trim() !== '');
+        // console.log(response.data.choices[0].text)
     } catch (error) {
         // console.error(error);
         throw new APIError(500, "Error generating questions");
@@ -113,7 +113,7 @@ async function createRandomData() {
         const s = new Skill({
             title: skill,
             tutorials: tutorials,
-            questions: await promptGPT(`Can you generate 10 technical interview questions about the following skill: ${skill}`)
+            questions: await getQuestionsFromGPT(`Can you generate 10 technical interview questions about the following skill: ${skill}`)
         })
         await s.save()
     })
