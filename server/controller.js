@@ -1,7 +1,7 @@
 class Controller {
     constructor() { }
 
-    URL = "http://localhost:3000/api/explore"
+    //URL = "http://localhost:3000/api/explore"
 
     static async getExplorer(url) {
         if (url == undefined) throw new Error("No URL provided");
@@ -31,11 +31,10 @@ class Controller {
         })
     }
 
-    static async getFlex(experience, skills, jobTitle, userName, companyTitle) {
-        if (url == undefined) throw new Error("No URL provided");
+    static async getFlex(experience, skills, jobTitle, education, companyTitle) {
 
         return new Promise(async (res, rej) => {
-            const payload = { experience, skills, jobTitle, userName, companyTitle }
+            const payload = { experience, skills, jobTitle, education, companyTitle }
             try {
                 const response = await fetch("http://localhost:3000/api/flex",
                     {
@@ -60,5 +59,29 @@ class Controller {
     }
 }
 
+// async function run() {
+//     results = await Controller.getExplorer("https://www.linkedin.com/jobs/view/3479992115");
+//     console.log(results)
 
+//     experience = [{
+//         company: "Netflix",
+//         skills: ["Java", "Python", "C++"],
+//         position: "Software Engineer",
+//         timePeriod: 2
+//     },
+//     {
+//         company: "BC Cancer",
+//         skills: ["SQL", "Java", "CSS"],
+//         position: "Data Analyst",
+//         timePeriod: .5
+//     }]
+//     let education = "BCIT"
+
+//     results2 = await Controller.getFlex(experience, results.skills, results.jobTitle, education, results.company)
+//     console.log(results2)
+
+
+// }
+
+// run()
 module.exports = Controller;
