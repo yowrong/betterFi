@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Container, Title, Accordion, createStyles, rem } from '@mantine/core';
+import { Container, Accordion, createStyles, rem } from '@mantine/core';
 import { FloatingLabelInput } from './TextInput';
 
 const useStyles = createStyles((theme) => ({
+  root: {
+    padding: 0,
+    margin: 0,
+  },
+
   wrapper: {
-    paddingBottom: `calc(${theme.spacing.xl} * 2)`,
+    padding: 0,
     maxHeight: 650,
     overflowY: 'scroll',
     '-ms-overflow-style': 'none',
@@ -16,6 +21,8 @@ const useStyles = createStyles((theme) => ({
   },
 
   item: {
+    padding: 0,
+    margin: 0,
     borderRadius: theme.radius.md,
     marginBottom: theme.spacing.lg,
     border: `${rem(1)} solid ${
@@ -24,16 +31,11 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const FaqSimple = () => {
-  const [data, setData] = useState([]);
+const FaqSimple = ({ data }) => {
   const { classes } = useStyles();
 
-  useEffect(() => {
-    const skills = JSON.parse(localStorage.getItem('skills'));
-    setData(skills.map(({ title, questions }) => ({ title, questions })));
-  }, []);
-
-  const renderQuestions = (questions, i) => {
+  const renderQuestions = (questions) => {
+    console.log(questions);
     return questions.map((q, i) => (
       <Accordion.Item className={classes.item} value={`q-${i}`}>
         <Accordion.Control>{q}</Accordion.Control>
@@ -49,7 +51,7 @@ const FaqSimple = () => {
       <>
         <h1>{q['title']}</h1>
         <Accordion variant="separated">
-          {renderQuestions(q['questions'], i)}
+          {renderQuestions(q['questions'])}
         </Accordion>
       </>
 
@@ -59,6 +61,7 @@ const FaqSimple = () => {
   return (
     <Container size="sm" className={classes.wrapper}>
       {renderSections(data)}
+      {/* {renderQuestions(data)} */}
     </Container>
   );
 }

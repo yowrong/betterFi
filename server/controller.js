@@ -3,7 +3,8 @@ class Controller {
 
     //URL = "http://localhost:3000/api/explore"
 
-    static async getExplorer(url) {
+    static async getExplore(url) {
+        console.log('getExplore')
         if (url == undefined) throw new Error("No URL provided");
 
         return new Promise(async (res, rej) => {

@@ -8,6 +8,7 @@ const axios = require('axios');
 const { JSDOM } = require("jsdom");
 const fs = require('fs');
 const { google } = require('googleapis')
+const cors = require('cors');
 
 require('dotenv').config()
 
@@ -20,6 +21,7 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://bcit:0pyQMqP63d5dp7kN
 
 
 app.use(bodyParser.json());
+app.use(cors({origin: '*'}))
 
 // set up logger
 app.use(logger('dev'));
