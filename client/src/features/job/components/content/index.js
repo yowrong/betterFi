@@ -16,12 +16,14 @@ const Content = ({index, onInputChanged}) => {
 
     return (
         <motion.div
+            key={index}
             variants={animateContainer}
             initial='hidden'
             animate='visible'
             className={classes.root}
         >
             <motion.h1
+                key={`title-${index}`}
                 variants={animateTitle}
                 initial='hidden'
                 animate='visible'
@@ -29,6 +31,7 @@ const Content = ({index, onInputChanged}) => {
                 {editForms[index]['title']}
             </motion.h1>
             <motion.p
+                key={`description-${index}`}
                 variants={animateTitle}
                 initial='hidden'
                 animate='visible'
@@ -36,6 +39,7 @@ const Content = ({index, onInputChanged}) => {
                 {editForms[index]['description']}
             </motion.p>
             <motion.div
+                key={`content-${index}`}
                 variants={animateItem}
                 initial='hidden'
                 animate='visible'

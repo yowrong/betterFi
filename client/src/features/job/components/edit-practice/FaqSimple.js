@@ -5,7 +5,7 @@ const useStyles = createStyles((theme) => ({
   wrapper: {
     paddingTop: `calc(${theme.spacing.xl} * 2)`,
     paddingBottom: `calc(${theme.spacing.xl} * 2)`,
-    minHeight: 650,
+    maxHeight: 650,
   },
 
   title: {

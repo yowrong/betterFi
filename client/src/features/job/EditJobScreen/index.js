@@ -69,6 +69,7 @@ const EditJobScreen = () => {
         <div className={classes.root}>
             <NavBar isActive="/new-job" />
             <Container className={classes.content} fluid>
+                
                 <Container className={classes.timeline} fluid>
                     <BetterTimeline
                         active={active}
@@ -78,6 +79,7 @@ const EditJobScreen = () => {
                     />
                 </Container>
                 <Container className={classes.mainContent} fluid>
+                    {allDone && <ConfettiExplosion duration={4000}/>}
                     <Container className={classes.placeholder} fluid>
                         <Content index={current} onInputChanged={onInputChanged}/>
                     </Container>
@@ -88,7 +90,6 @@ const EditJobScreen = () => {
                         gradient={{ from: '#FC466B', to: '#3F5EFB' }}
                         className={classes.nextBtn}
                         onClick={onFormNext}>
-                            {allDone && <ConfettiExplosion duration={4000}/>}
                             {active === 5 ? 'All Done' : 'Next'}
                     </Button>
                 </Container>
