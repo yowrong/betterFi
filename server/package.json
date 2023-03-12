@@ -15,6 +15,8 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
+    "google-apis": "^1.0.0",
+    "googleapis": "^112.0.0",
     "jsdom": "^21.1.0",
     "mongoose": "^7.0.1",
     "morgan": "^1.10.0",
