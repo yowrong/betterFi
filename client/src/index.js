@@ -10,7 +10,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <MantineProvider
     theme={{
-      colorScheme: 'light',
+      colorScheme: 'dark',
       colors: {
         rose: '#FC466B',
         magenta: '#d3498f',
