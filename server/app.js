@@ -23,8 +23,7 @@ app.use(bodyParser.json());
 app.use(logger('dev'));
 
 // Default Skills
-const SKILLS = ["HTML", "CSS"] // "JavaScript", "React", "Node", "Express", "MongoDB", "Python", "Java", "C++", "C#", "PHP", "SQL", "Git", "GitHub"]
-// , "Linux", "Windows", "MacOS", "Android", "iOS", "Swift", "Kotlin", "Ruby", "Ruby on Rails", "Angular", "Vue", "Bootstrap", "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL", "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify", "Firebase", "Jest", "Mocha", "Chai", "Cypress", "Selenium", "Jenkins", "Travis CI", "Circle CI", "Babel", "Webpack", "Gulp", "Grunt", "NPM", "Yarn", "Bash", "Zsh", "PowerShell", "Bash on Windows", "Bash on Ubuntu on Windows", "Bash on macOS", "Bash on Android", "Bash on iOS", "Bash on Chrome OS", "Bash on Linux", "Bash on FreeBSD", "Bash on OpenBSD", "Bash on NetBSD", "Bash on DragonFly BSD", "Bash on Solaris", "Bash on AIX", "Bash on HP-UX", "Bash on IRIX", "Bash on OpenIndiana", "Bash on Oracle Solaris", "Bash on Oracle Linux", "Bash on RHEL", "Bash on CentOS", "Bash on Fedora", "Bash on SUSE", "Bash on openSUSE", "Bash on Arch Linux", "Bash on Manjaro", "Bash on Alpine Linux", "Bash on Gentoo", "Bash on Slackware", "Bash on Void Linux", "Bash on Solus", "Bash on Mageia", "Bash on PCLinuxOS", "Bash on Deepin", "Bash on elementary OS", "Bash on Linux Mint", "Bash on Ubuntu MATE", "Bash on Ubuntu Budgie", "Bash on Kubuntu", "Bash on Xubuntu", "Bash on Lubuntu", "Bash on Ubuntu Kylin"]
+const SKILLS = ["Android", "HTML", "CSS", "JavaScript", "React", "Node", "Express", "MongoDB", "Python", "Java", "C++", "C#", "PHP", "SQL", "Git", "GitHub", "Linux", "Windows", "MacOS", "iOS", "Swift", "Kotlin", "Ruby", "Ruby on Rails", "Angular", "Vue", "Bootstrap", "Materialize", "jQuery", "AJAX", "JSON", "XML", "REST", "GraphQL", "Docker", "Kubernetes", "AWS", "Google Cloud", "Azure", "Heroku", "Netlify", "Firebase", "Jest", "Mocha", "Chai", "Cypress", "Selenium", "Jenkins", "Travis CI", "Circle CI", "Babel", "Webpack", "Gulp", "Grunt", "NPM", "Yarn", "Bash", "Zsh", "PowerShell", "Bash on Windows", "Bash on Ubuntu on Windows", "Bash on macOS", "Bash on Android", "Bash on iOS", "Bash on Chrome OS", "Bash on Linux", "Bash on FreeBSD", "Bash on OpenBSD", "Bash on NetBSD", "Bash on DragonFly BSD", "Bash on Solaris", "Bash on AIX", "Bash on HP-UX", "Bash on IRIX", "Bash on OpenIndiana", "Bash on Oracle Solaris", "Bash on Oracle Linux", "Bash on RHEL", "Bash on CentOS", "Bash on Fedora", "Bash on SUSE", "Bash on openSUSE", "Bash on Arch Linux", "Bash on Manjaro", "Bash on Alpine Linux", "Bash on Gentoo", "Bash on Slackware", "Bash on Void Linux", "Bash on Solus", "Bash on Mageia", "Bash on PCLinuxOS", "Bash on Deepin", "Bash on elementary OS", "Bash on Linux Mint", "Bash on Ubuntu MATE", "Bash on Ubuntu Budgie", "Bash on Kubuntu", "Bash on Xubuntu", "Bash on Lubuntu", "Bash on Ubuntu Kylin"]
 const VIDEOS = [
     "hQAHSlTtcmY",
     "xk4_1vDrzzo",
@@ -95,7 +94,7 @@ async function createRandomData() {
     })
 }
 
-createRandomData();
+// createRandomData();
 
 class APIError extends Error {
     constructor(status, message) {
@@ -104,6 +103,19 @@ class APIError extends Error {
     }
 }
 
+
+function extractSkillsFromPosting(skillsSentences) {
+    const skillSet = new Set();
+    for (var i = 0; i < SKILLS.length; i++) {
+        var s = SKILLS[i].toLowerCase();
+        for (var j = 0; j < skillsSentences.length; j++) {
+            if (skillsSentences[j].toLowerCase().includes(s))
+                skillSet.add(SKILLS[i]);
+        }
+     }
+     console.log(skillSet);
+     return Array.from(skillSet);
+}
 // createRandomData();
 
 const PORT = process.env.PORT || 3000;
@@ -122,8 +134,8 @@ async function getHTML(url) {
     return res.data;
 }
 
-// This function will parse the HTML and return the skills
-async function parseHTML(html) {
+// This function will parse the HTML and return the an array of skills as sentences
+function parseHTML(html) {
     // Load HTML into cheerio
     const $ = new JSDOM(html);
 
@@ -133,9 +145,9 @@ async function parseHTML(html) {
 
     // Get ul from skills container
     const skills = skillsContainer.querySelectorAll('li');
-    const skillsArray = Array.from(skills);
+    let skillsArray = Array.from(skills);
 
-    skillsArray.forEach((s) => console.log(s.textContent))
+    skillsArray = skillsArray.map(s => s.textContent)
 
     // Return skills
     return skillsArray;
@@ -152,10 +164,13 @@ app.post('/api/explore', async (req, res) => {
     try {
         const html = await getHTML(url);
 
-        fs.writeFileSync('test1.html', html);
+        // fs.writeFileSync('test1.html', html);
 
         // Parse HTML for skills
-        const skills = parseHTML(html);
+        const skillSentences = parseHTML(html);
+        const skills = extractSkillsFromPosting(skillSentences);
+
+        skills.forEach(s => console.log(s));
 
         return res.send('HELLO')
     } catch (error) {
