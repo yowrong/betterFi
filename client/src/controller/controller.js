@@ -28,12 +28,13 @@ export const getExplore= async (requestJson) => {
     const url = `${baseURL}explore`;
 
     try {
+        const res = { url: requestJson }
         const response = await fetch(url, {
             headers: {
                 'Content-Type': 'application/json'
             },
             method: 'POST',
-            body: JSON.stringify(requestJson)
+            body: JSON.stringify(res)
         });
 
         if (response.ok) {

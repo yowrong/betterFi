@@ -1,4 +1,5 @@
-import { Container, Title, Text, Button, Paper, Image, Card, Overlay, AspectRatio, rem } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { Container, Title, Text, Button, Paper, rem } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 
 import { sampleData } from '../../../../config/sample-data';
@@ -7,8 +8,12 @@ import { ytThumbnail, ytLink } from './constant';
 
 export const EditLevelUp = () => {
     const { classes } = useStyles();
-    const data = sampleData['skills'].map(
-        ({title, tutorials}) => ({title, tutorials}));
+    const [data, setData] = useState([])
+
+    useEffect(() => {
+        const skills = JSON.parse(localStorage.getItem('skills'))
+        setData(skills.map(({title, tutorials}) => ({title, tutorials}))) 
+    }, [])
 
     const onBtnClicked = (url) => {
         window.open(url, '_blank').focus();
