@@ -304,7 +304,7 @@ async function generateCoverLetter(skills, experience, jobTitle, education, comp
 
     // Generate Intro
     let intro = await getResumeFromGPT(`Write an introduction paragraph for a cover letter addressed to a hiring manager for a ${jobTitle} position at ${companyTitle}.` +
-        `The letter should briefly introduce yourself and your education at BCIT, your skills including ${skills} ,and express your enthusiasm for the job and Fortinet.`)
+        `The letter should briefly introduce yourself and your education at ${education}, your skills including ${skills} ,and state your enthusiasm for the job and Fortinet.`)
 
     // Generate Skills
     let skillText = [];
@@ -316,7 +316,7 @@ async function generateCoverLetter(skills, experience, jobTitle, education, comp
 
     // Genrate Conclusion
     let conclusion = await getResumeFromGPT(`Write a conclusion paragraph for a cover letter for a ${jobTitle} position at ${companyTitle}.` +
-        `The letter should reitrate your education at BCIT, your skills including ${skills}, and express your enthusiasm for the job and Fortinet.`)
+        `The letter should reitrate your education at ${education}, your skills including ${skills}, and state your enthusiasm for the job and Fortinet.`)
 
 
 
