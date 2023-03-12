@@ -7,4 +7,4 @@ BetterFi is a React Web App to help you on your job search.
 3. Start server ```npm start```
 4. Open new terminal
 5. Navigate into client directory ```cd client```
-6. Run ```npm start``
+6. Run ```npm start```
