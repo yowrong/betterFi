@@ -9,7 +9,7 @@ const timelineConstants = [
     },
     {
         title: 'Apply',
-        description: 'Submit your application with tailor-fit resume and cover letter.'
+        description: 'Submit your application with tailor-fit cover letter.'
     },
     {
         title: 'Level Up',

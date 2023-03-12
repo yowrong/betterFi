@@ -62,7 +62,7 @@ export const editForms = [
     {
         title: 'Apply',
         component: (<EditApply />),
-        description: "And it's done! Below you can find your application package, which you can download and submit to the company."
+        description: "And it's done! Below you can find and edit your personalized cover letter. It just takes one click to download, and then another to sent it off to the job of your dreams!"
     },
     {
         title: 'Level Up',

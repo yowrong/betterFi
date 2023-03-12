@@ -69,7 +69,7 @@ export const EditExplore = () => {
     return (
         <Container 
             fluid
-            classNames={classes.root}
+            className={classes.root}
             style={{display: 'flex', flexDirection: 'row', alignItems: 'end', padding: `${rem(20)} 0` }}
         >
             <TextInput
