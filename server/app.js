@@ -65,28 +65,6 @@ const VIDEOS = [
     "fgdpvwEWJ9M",
 ]
 
-async function getResumeFromGPT(prompt) {
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
-    }
-
-    payload = {
-        "prompt": prompt,
-        "max_tokens": 1024,
-        "temperature": 0.5,
-        "model": GPT_MODEL_ENGINE,
-    }
-
-    try {
-        let response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
-        // console.log(response.data.choices[0].text);
-        // console.log(response.data.choices)
-    } catch (error) {
-        throw new APIError(500, "Error generating resume");
-    }
-}
-
 
 
 // getResumeFromGPT("Write a cover letter for me for " +
@@ -153,9 +131,10 @@ async function getResumeFromGPT(prompt) {
 
     try {
         let response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
-        console.log(response.data.choices[0].text);
+        return response.data.choices[0].text;
         // console.log(response.data.choices)
     } catch (error) {
+        console.log(error);
         throw new APIError(500, "Error generating resume");
     }
 }
@@ -300,26 +279,43 @@ function parseHTML(html) {
 
 // This function will take a string and return an array of skills
 // and an experiences and return a cover letter text
-async function generateCoverLetter(skills, experience, jobTitle, companyName) {
+async function generateCoverLetter(skills, experience, jobTitle, education, companyTitle) {
 
-    let s = skills.filter(s => experience.skills.contains(s))
 
-    let skillSentance = s.map(s => s + ", ")
+    let skillsSet = new Set();
+
+    console.log(experience)
+    // Iterate through skills and filter out skills that are not in the experience skills
+    for (let i = 0; i < skills.length; i++) {
+        for (let j = 0; j < experience.length; j++) {
+            if (experience[j].skills.includes(skills[i].title.trim()))
+                skillsSet.add(skills[i])
+        }
+    }
+
+    matchedSkills = Array.from(skillsSet)
+    skills = matchedSkills.map(s => s.title).join(", ")
 
     // Generate Intro
-    let intro = getResumeFromGPT(`Write an introduction paragraph for a cover letter addressed to a hiring manager for a ${jobTitle} position at ${companyName}.` +
-        `The letter should briefly introduce yourself and your education at BCIT, your skills including ${skillSentance} ,and express your enthusiasm for the job and Fortinet.`)
+    let intro = await getResumeFromGPT(`Write an introduction paragraph for a cover letter addressed to a hiring manager for a ${jobTitle} position at ${companyTitle}.` +
+        `The letter should briefly introduce yourself and your education at BCIT, your skills including ${skills} ,and express your enthusiasm for the job and Fortinet.`)
 
     // Generate Skills
     let skillText = [];
-    for (var i = 0; i < s.length; i++) skillText.push(await getResumeFromGPT())
+    let i = 0;
+    while (i < 3 && i < matchedSkills.length) {
+        console.log(matchedSkills[i]);
+        skillText.push(await getResumeFromGPT(`Write a paragraph about my following skill: ${matchedSkills[i++].title} and how it relates to the job at ${companyTitle}.`));
+    }
 
     // Genrate Conclusion
-    let conclusion = getResumeFromGPT(`Write a conclusion paragraph for a cover letter for a ${jobTitle} position at ${companyName}.` +
-        `The letter should reitrate your education at BCIT, your skills including ${skillSentance}, and express your enthusiasm for the job and Fortinet.`)
+    let conclusion = await getResumeFromGPT(`Write a conclusion paragraph for a cover letter for a ${jobTitle} position at ${companyTitle}.` +
+        `The letter should reitrate your education at BCIT, your skills including ${skills}, and express your enthusiasm for the job and Fortinet.`)
+
+
 
     let meat = skillText.map(s => s + "\n")
-    return intro + "\n" + meat + "\n" + conclusion;
+    return intro + "\n" + meat + "\n" + conclusion
 }
 
 // This endpoint will recieve a url from the body
@@ -359,13 +355,14 @@ app.post('/api/explore', async (req, res) => {
 // then make a call to chatGPT to createa a resume template
 app.post('/api/flex', async (req, res) => {
 
-    // See if user experience is in body
-    const { experience, skills, jobTitle, userName, companyTitle } = req.body;
+    let { experience, skills, jobTitle, education, companyTitle } = req.body;
     if (!experience) return res.status(400).json({ message: "No experience provided" });
     if (!skills) return res.status(400).json({ message: "No skills provided" });
+    if (!jobTitle) return res.status(400).json({ message: "No job title provided" });
+    if (!education) return res.status(400).json({ message: "No education provided" });
+    if (!companyTitle) return res.status(400).json({ message: "No company title provided" });
 
-    // Create prompt
-    const coverLetter = await generateCoverLetter(experience, skills);
+    const coverLetter = await generateCoverLetter(skills, experience, jobTitle, education, companyTitle);
 
     res.send({ coverLetter })
 })
