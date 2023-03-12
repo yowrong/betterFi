@@ -1,6 +1,8 @@
+import { FaqSimple } from "./FaqSimple";
+
 const EditPractice = () => {
     return (
-        <div>Edit Practice</div>
+        <FaqSimple/>
     );
 }
 
