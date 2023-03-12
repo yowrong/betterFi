@@ -1,11 +1,14 @@
+import { useState, useEffect } from 'react';
 import { Container, Title, Accordion, createStyles, rem } from '@mantine/core';
 import { FloatingLabelInput } from './TextInput';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
-    paddingTop: `calc(${theme.spacing.xl} * 2)`,
     paddingBottom: `calc(${theme.spacing.xl} * 2)`,
     maxHeight: 650,
+    overflowY: 'scroll',
+    '-ms-overflow-style': 'none',
+    'scrollbar-width': 'none',
   },
 
   title: {
@@ -21,50 +24,43 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function FaqSimple() {
+const FaqSimple = () => {
+  const [data, setData] = useState([]);
   const { classes } = useStyles();
+
+  useEffect(() => {
+    const skills = JSON.parse(localStorage.getItem('skills'));
+    setData(skills.map(({ title, questions }) => ({ title, questions })));
+  }, []);
+
+  const renderQuestions = (questions, i) => {
+    return questions.map((q, i) => (
+      <Accordion.Item className={classes.item} value={`q-${i}`}>
+        <Accordion.Control>{q}</Accordion.Control>
+        <Accordion.Panel>
+          <FloatingLabelInput />
+        </Accordion.Panel>
+      </Accordion.Item>
+    ));
+  }
+
+  const renderSections = (sections) => {
+    return sections.map((q, i) => (
+      <>
+        <h1>{q['title']}</h1>
+        <Accordion variant="separated">
+          {renderQuestions(q['questions'], i)}
+        </Accordion>
+      </>
+
+    ));
+  }
+
   return (
     <Container size="sm" className={classes.wrapper}>
-      <Title align="center" className={classes.title}>
-        Common Interview Questions
-      </Title>
-
-      <Accordion variant="separated">
-        <Accordion.Item className={classes.item} value="q1">
-          <Accordion.Control>Can you tell us a little bit about yourself?</Accordion.Control>
-          <Accordion.Panel>
-            <FloatingLabelInput/>
-          </Accordion.Panel>
-        </Accordion.Item>
-
-        <Accordion.Item className={classes.item} value="q2">
-          <Accordion.Control>Why do you want to work for our company?</Accordion.Control>
-          <Accordion.Panel>
-            <FloatingLabelInput/>
-          </Accordion.Panel>
-        </Accordion.Item>
-
-        <Accordion.Item className={classes.item} value="q3">
-          <Accordion.Control>What are your biggest strengths and weaknesses?</Accordion.Control>
-          <Accordion.Panel>
-            <FloatingLabelInput/>
-          </Accordion.Panel>
-        </Accordion.Item>
-
-        <Accordion.Item className={classes.item} value="q4">
-          <Accordion.Control>How do you handle stress and pressure?</Accordion.Control>
-          <Accordion.Panel>
-            <FloatingLabelInput/>
-          </Accordion.Panel>
-        </Accordion.Item>
-
-        <Accordion.Item className={classes.item} value="q5">
-          <Accordion.Control>Can you give an example of a time when you had to solve a problem?</Accordion.Control>
-          <Accordion.Panel>
-            <FloatingLabelInput/>
-          </Accordion.Panel>
-        </Accordion.Item>
-      </Accordion>
+      {renderSections(data)}
     </Container>
   );
 }
+
+export default FaqSimple;

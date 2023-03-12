@@ -1,4 +1,4 @@
-import { FaqSimple } from "./FaqSimple";
+import FaqSimple from "./FaqSimple";
 
 const EditPractice = () => {
     return (
