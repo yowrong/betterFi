@@ -78,33 +78,8 @@ async function promptGPT(prompt) {
     return questions;
 }
 
-<<<<<<< HEAD
 // promptGPT("Can you generate 10 technical interview questions about the following skill: object-oriented programming")
 
-=======
-async function getYTData(video) {
-    return new Promise(res => {
-        const url = `https://www.youtube.com/watch?v=${video}`
-        const youtube = google.youtube({
-            version: 'v3',
-            auth: YT_KEY
-        });
-
-        youtube.videos.list({
-            id: video,
-            part: 'snippet'
-        }, (err, data) => {
-            if (err) {
-                console.log(err)
-                return res({ description: "", title: "" })
-            }
-            const { description, title } = data.data.items[0].snippet
-            res({ description, title })
-        })
-
-    })
-}
->>>>>>> 9299769 (Added YT api to get video description and title)
 
 // Here we will create random data for our database
 async function createRandomData() {
@@ -120,13 +95,8 @@ async function createRandomData() {
         // New Skill await promptGPT(`Can you generate 10 technical interview questions about the following skill: ${skill}`)
         const s = new Skill({
             title: skill,
-<<<<<<< HEAD
             tutorials: tutorials
 
-=======
-            tutorials: tutorials,
-            questions: ["blah", "blah", "blah", "blah", "blah", "blah", "blah", "blah", "blah", "blah"]
->>>>>>> 9299769 (Added YT api to get video description and title)
         })
         await s.save()
     })
@@ -199,30 +169,7 @@ function parseHTML(html) {
 app.post('/api/explore', async (req, res) => {
     const { url } = req.body;
 
-<<<<<<< HEAD
     const html = await getHTML(url);
-=======
-    try {
-        const html = await getHTML(url);
-
-        // fs.writeFileSync('test1.html', html);
-
-        // Parse HTML for skills
-        const skillSentences = parseHTML(html);
-        const skills = extractSkillsFromPosting(skillSentences);
-
-        skills.forEach(s => console.log(s));
-
-        // Get skills from database
-
-        const skillsFromDB = await Skill.find({ title: { $in: skills } });
-        return res.send(skillsFromDB)
-    } catch (error) {
-        console.error(error);
-        res.status(error.status).json({ message: error.message });
-    }
-
->>>>>>> 9299769 (Added YT api to get video description and title)
 });
 
 
