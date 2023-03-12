@@ -33,6 +33,8 @@ const SKILLS = ["Python", "Java", "C++", "C#", "Android", "HTML", "CSS",
     "Firebase", "Jest", "Mocha", "Chai", "Selenium", "Jenkins", "NPM", "Yarn",
     "Bash", "PowerShell",
 ]
+
+console.log(SKILLS.length);
 const VIDEOS = [
     "hQAHSlTtcmY",
     "xk4_1vDrzzo",
@@ -112,8 +114,8 @@ async function getResumeFromGPT(prompt) {
 
 
 // Conclusion paragraph
-getResumeFromGPT("Write a conclusion paragraph for a cover letter for a software engineering position." +
-"The letter should reitrate your education at BCIT, your skills including Java, Javascript, SQL, and express your enthusiasm for the job and Fortinet.")
+// getResumeFromGPT("Write a conclusion paragraph for a cover letter for a software engineering position." +
+//     "The letter should reitrate your education at BCIT, your skills including Java, Javascript, SQL, and express your enthusiasm for the job and Fortinet.")
 
 // getResumeFromGPT("I possess the following technical skills: Java, Javascript, Pyton. Could you please generate a paragraph describing how each skill would benefit me in a software developer role?")
 
@@ -145,33 +147,55 @@ async function getQuestionsFromGPT(prompt) {
     return questions;
 }
 
-// async function getYTData(skill) {
-//     return new Promise(res => {
-//         const youtube = google.youtube({
-//             version: 'v3',
-//             auth: YT_KEY
-//         });
+async function getResumeFromGPT(prompt) {
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+    }
 
-//         youtube.search.list({
-//             part: 'id,snippet',
-//             q: skill + " tutorial",
-//             type: 'video',
-//             maxResults: 5,
-//         }, (err, data) => {
-//             if (err) {
-//                 console.error(`Error searching for videos with keyword ${skill}: ${err}`);
-//                 return res([]);
-//             }
-//             const videos = data.data.items.map(item => {
-//                 const { videoId } = item.id;
-//                 const { title, description, thumbnails } = item.snippet;
-//                 return { video: videoId, title, description, thumbnail: thumbnails.default.url };
-//             });
-//             console.log(`Found ${videos.length} videos with keyword ${skill}`);
-//             return res(videos);
-//         })
-//     })
-// }
+    payload = {
+        "prompt": prompt,
+        "max_tokens": 1024,
+        "temperature": 0.5,
+        "model": GPT_MODEL_ENGINE,
+    }
+
+    try {
+        let response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
+        console.log(response.data.choices[0].text);
+        // console.log(response.data.choices)
+    } catch (error) {
+        throw new APIError(500, "Error generating resume");
+    }
+}
+
+async function getYTData(skill) {
+    return new Promise(res => {
+        const youtube = google.youtube({
+            version: 'v3',
+            auth: YT_KEY
+        });
+
+        youtube.search.list({
+            part: 'id,snippet',
+            q: skill + " tutorial",
+            type: 'video',
+            maxResults: 5,
+        }, (err, data) => {
+            if (err) {
+                console.error(`Error searching for videos with keyword ${skill}: ${err}`);
+                return res([]);
+            }
+            const videos = data.data.items.map(item => {
+                const { videoId } = item.id;
+                const { title, description, thumbnails } = item.snippet;
+                return { video: videoId, title, description, thumbnail: thumbnails.default.url };
+            });
+            console.log(`Found ${videos.length} videos with keyword ${skill}`);
+            return res(videos);
+        })
+    })
+}
 
 // // promptGPT("Can you generate a list of 10 youtube videos, returning the title and link, specifically about the following skill: Java")
 
@@ -186,7 +210,6 @@ async function getQuestionsFromGPT(prompt) {
 //     }
 // }
 
-// createRandomData();
 
 class APIError extends Error {
     constructor(status, message) {
@@ -250,6 +273,29 @@ function parseHTML(html) {
     return [jobTitle, company, skillsArray];
 }
 
+// This function will take a string and return an array of skills
+// and an experiences and return a cover letter text
+async function generateCoverLetter(skills, experience, jobTitle, companyName) {
+
+    let s = skills.filter(s => experience.skills.contains(s))
+
+    let skillSentance = s.map(s => s + ", ")
+
+    // Generate Intro
+    let intro = getResumeFromGPT(`Write an introduction paragraph for a cover letter addressed to a hiring manager for a ${jobTitle} position at ${companyName}.` +
+        `The letter should briefly introduce yourself and your education at BCIT, your skills including ${skillSentance} ,and express your enthusiasm for the job and Fortinet.`)
+
+    // Generate Skills
+    let skillText = [];
+    for (var i = 0; i < s.length; i++) skillText.push(await getResumeFromGPT())
+
+    // Genrate Conclusion
+    let conclusion = getResumeFromGPT(`Write a conclusion paragraph for a cover letter for a ${jobTitle} position at ${companyName}.` +
+        `The letter should reitrate your education at BCIT, your skills including ${skillSentance}, and express your enthusiasm for the job and Fortinet.`)
+
+    let meat = skillText.map(s => s + "\n")
+    return intro + "\n" + meat + "\n" + conclusion;
+}
 
 // This endpoint will recieve a url from the body
 // and get the HTML and parse it for the skills
@@ -270,7 +316,7 @@ app.post('/api/explore', async (req, res) => {
         // Get skills from database
 
         const skills = await Skill.find({ title: { $in: skillsFromArray } });
-        return res.send({skills, jobTitle, company})
+        return res.send({ skills, jobTitle, company })
     } catch (error) {
         console.error(error);
         res.status(error.status).json({ message: error.message });
@@ -282,9 +328,17 @@ app.post('/api/explore', async (req, res) => {
 // This endpoint will recieve a users job experience
 // and a list of skills they have currently, the api will
 // then make a call to chatGPT to createa a resume template
-app.post('/api/flex', (req, res) => {
+app.post('/api/flex', async (req, res) => {
 
+    // See if user experience is in body
+    const { experience, skills, jobTitle, userName, companyTitle } = req.body;
+    if (!experience) return res.status(400).json({ message: "No experience provided" });
+    if (!skills) return res.status(400).json({ message: "No skills provided" });
 
+    // Create prompt
+    const coverLetter = await generateCoverLetter(experience, skills);
+
+    res.send({ coverLetter })
 })
 
 app.listen(3000, () => console.log(`Server started on port ${PORT}`));
