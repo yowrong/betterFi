@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { TextInput, Button, Container, rem, useMantineTheme } from '@mantine/core';
 import { toastTheme, useStyles } from './styles';
 import { notifications } from '@mantine/notifications';
-import { getExplore } from '../../../../../../server/controller';
+import { getExplore } from '../../../../controller/controller';
 
 export const EditExplore = () => {
     const [focused, setFocused] = useState(false);
