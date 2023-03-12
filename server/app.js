@@ -51,6 +51,35 @@ const VIDEOS = [
     "fgdpvwEWJ9M",
 ]
 
+async function getResumeFromGPT(prompt) {
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+    }
+
+    payload = {
+        "prompt": prompt,
+        "max_tokens": 1024,
+        "temperature": 1,
+        "model": GPT_MODEL_ENGINE,
+    }
+
+    try {
+        let response = await axios.post('https://api.openai.com/v1/completions', payload, { headers });
+        console.log(response.data.choices[0].text);
+        // console.log(response.data.choices)
+    } catch (error) {
+        throw new APIError(500, "Error generating resume");
+    }
+}
+
+
+
+// getResumeFromGPT("Generate a four-paragraph-long cover letter for me for " +
+// "a software developer position at Fortinet, based on the following user information. " + 
+// "Name: Josef. Skills: Java, Javascript, SQL. Education: BCIT 2021. Experience: Business Intelligence at BC Cancer (2020)." +
+// "Please include a short section about how my interests align with the company.")
+
 
 async function getQuestionsFromGPT(prompt) {
     headers = {
